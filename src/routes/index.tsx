@@ -120,7 +120,6 @@ function Hero() {
       <div className="pointer-events-none absolute inset-0 bg-grid opacity-60" />
       <Section className="!py-24 md:!py-32">
         <div className="reveal-blur mx-auto flex max-w-3xl flex-col items-center text-center">
-          <Eyebrow icon={Sparkles}>+50 Automações Comerciais · Biblioteca Visual Premium</Eyebrow>
           <h1 className="mt-6 text-balance text-[2.5rem] font-bold leading-[1.05] tracking-tight text-foreground md:text-6xl lg:text-7xl">
             O atalho entre <span className="text-brand-gradient">aprender automação</span> e conquistar seus primeiros clientes.
           </h1>
@@ -138,118 +137,21 @@ function Hero() {
           </div>
         </div>
 
-        {/* Hero mock */}
+        {/* Video placeholder */}
         <div className="reveal mt-16 [animation-delay:200ms]">
-          <HeroMock />
+          <div className="relative mx-auto max-w-5xl">
+            <div className="absolute -inset-x-8 -top-8 -bottom-8 -z-10 rounded-[2rem] bg-gradient-to-b from-[color:var(--brand)]/10 to-transparent blur-2xl" />
+            <div className="aspect-video w-full rounded-2xl border border-border bg-[color:var(--surface)] shadow-[0_30px_80px_-30px_oklch(0.205_0.04_256/0.25)] flex items-center justify-center">
+              <div className="text-center">
+                <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-[color:var(--brand)]/10">
+                  <svg className="h-8 w-8 text-[color:var(--brand)]" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                </div>
+                <p className="mt-4 text-sm text-muted-foreground">Vídeo será anexado em breve</p>
+              </div>
+            </div>
+          </div>
         </div>
       </Section>
-    </div>
-  );
-}
-
-function HeroMock() {
-  return (
-    <div className="relative mx-auto max-w-5xl">
-      <div className="absolute -inset-x-8 -top-8 -bottom-8 -z-10 rounded-[2rem] bg-gradient-to-b from-[color:var(--brand)]/10 to-transparent blur-2xl" />
-      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-[0_30px_80px_-30px_oklch(0.205_0.04_256/0.25)]">
-        {/* Window chrome */}
-        <div className="flex items-center justify-between border-b border-border bg-[color:var(--surface)] px-4 py-2.5">
-          <div className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
-            <span className="h-2.5 w-2.5 rounded-full bg-yellow-400/70" />
-            <span className="h-2.5 w-2.5 rounded-full bg-green-400/70" />
-          </div>
-          <div className="rounded-md border border-border bg-card px-3 py-1 text-xs text-muted-foreground">nexus.app/workflows/qualificacao-leads</div>
-          <div className="w-12" />
-        </div>
-        <div className="grid gap-0 md:grid-cols-[220px_1fr]">
-          {/* Sidebar */}
-          <aside className="hidden border-r border-border bg-[color:var(--surface)] p-4 md:block">
-            <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Biblioteca</div>
-            <ul className="mt-3 space-y-1 text-sm">
-              {[
-                ["Qualificação de Leads", true],
-                ["Onboarding de Clientes", false],
-                ["Cobrança Automática", false],
-                ["Resposta SDR · IA", false],
-                ["Relatórios Comerciais", false],
-              ].map(([label, active]) => (
-                <li key={String(label)} className={`flex items-center gap-2 rounded-md px-2.5 py-1.5 ${active ? "bg-card text-foreground ring-soft" : "text-muted-foreground hover:bg-card/60"}`}>
-                  <Workflow className="h-3.5 w-3.5" /> {String(label)}
-                </li>
-              ))}
-            </ul>
-          </aside>
-          {/* Canvas */}
-          <div className="relative bg-card p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-xs font-medium text-muted-foreground">Workflow</div>
-                <div className="text-lg font-semibold text-foreground">Qualificação de leads com IA</div>
-              </div>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-2.5 py-1 text-xs font-medium text-emerald-300">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500/150 animate-pulse" /> ativo
-              </span>
-            </div>
-            <FlowMock />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function FlowNode({ icon: Icon, title, subtitle, color = "brand" }: { icon: React.ComponentType<{ className?: string }>; title: string; subtitle: string; color?: "brand" | "slate" | "cyan" }) {
-  const accent = color === "brand" ? "text-[color:var(--brand)] bg-[color:var(--brand)]/10" : color === "cyan" ? "text-[color:var(--brand-2)] bg-[color:var(--brand-2)]/10" : "text-foreground bg-secondary";
-  return (
-    <div className="flex min-w-[160px] items-center gap-3 rounded-xl border border-border bg-card p-3 shadow-sm card-hover">
-      <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${accent}`}>
-        <Icon className="h-4.5 w-4.5" />
-      </div>
-      <div>
-        <div className="text-[13px] font-semibold text-foreground">{title}</div>
-        <div className="text-[11px] text-muted-foreground">{subtitle}</div>
-      </div>
-    </div>
-  );
-}
-
-function FlowMock() {
-  return (
-    <div className="relative mt-6">
-      <svg className="pointer-events-none absolute inset-0 h-full w-full" preserveAspectRatio="none">
-        <defs>
-          <linearGradient id="line" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#2563EB" stopOpacity="0.2" />
-            <stop offset="100%" stopColor="#0EA5E9" stopOpacity="0.7" />
-          </linearGradient>
-        </defs>
-      </svg>
-      <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-5">
-        <FlowNode icon={Database} title="Trigger" subtitle="Novo lead · Webhook" />
-        <Connector />
-        <FlowNode icon={Cpu} title="IA Classifica" subtitle="GPT · Score 0–100" color="cyan" />
-        <Connector />
-        <FlowNode icon={GitBranch} title="Roteador" subtitle="Quente · Frio" />
-      </div>
-      <div className="mt-4 grid grid-cols-1 items-center gap-4 md:grid-cols-5">
-        <div className="hidden md:block" />
-        <div className="hidden md:block" />
-        <div className="hidden md:block" />
-        <Connector vertical />
-        <FlowNode icon={Rocket} title="CRM + Slack" subtitle="Notifica vendedor" color="brand" />
-      </div>
-    </div>
-  );
-}
-
-function Connector({ vertical = false }: { vertical?: boolean }) {
-  return (
-    <div className={`hidden md:flex ${vertical ? "h-6 items-start justify-center" : "items-center justify-center"}`}>
-      <svg width="100%" height="20" viewBox="0 0 100 20" className="overflow-visible">
-        <line x1="0" y1="10" x2="100" y2="10" stroke="url(#line)" strokeWidth="1.5" strokeDasharray="4 4" strokeDashoffset="100" style={{ animation: "dash 1.6s linear infinite" }} />
-        <circle cx="100" cy="10" r="2.5" fill="#0EA5E9" />
-      </svg>
     </div>
   );
 }
@@ -486,61 +388,35 @@ function Modules() {
 /* ---------- Gallery ---------- */
 
 function Gallery() {
-  const items = [
-    { title: "Qualificação de Leads · IA", node: <FlowMini nodes={[Database, Cpu, GitBranch, Rocket]} labels={["Lead", "Score", "Rota", "CRM"]} /> },
-    { title: "Cobrança Automática", node: <FlowMini nodes={[Clock, Database, Zap, Check]} labels={["Vencimento", "Status", "Disparo", "Baixa"]} /> },
-    { title: "Onboarding de Cliente", node: <FlowMini nodes={[Users, BookOpen, Workflow, Rocket]} labels={["Compra", "Material", "Tarefas", "Sucesso"]} /> },
-    { title: "SDR com IA · WhatsApp", node: <FlowMini nodes={[MessageSquare, Cpu, GitBranch, Rocket]} labels={["Msg", "Intenção", "Rota", "Agenda"]} /> },
-    { title: "Relatórios Comerciais", node: <FlowMini nodes={[Database, Cpu, LineChart, BookOpen]} labels={["Fontes", "Cálculo", "Gráficos", "PDF"]} /> },
-    { title: "Sincronia CRM ↔ Planilha", node: <FlowMini nodes={[Database, Workflow, GitBranch, Database]} labels={["CRM", "Map", "Diff", "Sheet"]} /> },
-  ];
   return (
     <Section id="galeria">
       <SectionTitle
         eyebrow="Demonstração"
         icon={Eye}
-        title="Veja o material por dentro"
-        sub="Páginas, fluxogramas e exemplos de aplicações reais — pensados para escanear rápido."
+        title="Espaço para imagens"
+        sub="Imagens e materiais visuais serão anexados aqui em breve."
       />
       <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {items.map(({ title, node }) => (
-          <figure key={title} className="group overflow-hidden rounded-2xl border border-border bg-card shadow-sm card-hover">
-            <div className="aspect-[4/3] bg-[color:var(--surface)] p-5">
-              <div className="flex h-full flex-col">
-                <div className="mb-3 flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-border" />
-                  <span className="h-2 w-2 rounded-full bg-border" />
-                  <span className="h-2 w-2 rounded-full bg-border" />
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+            <div className="aspect-[4/3] bg-[color:var(--surface)] p-5 flex items-center justify-center">
+              <div className="text-center">
+                <div className="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-[color:var(--brand)]/10 text-[color:var(--brand)]">
+                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                 </div>
-                <div className="flex flex-1 items-center justify-center">{node}</div>
+                <p className="mt-2 text-xs text-muted-foreground">Imagem {i}</p>
               </div>
             </div>
-            <figcaption className="flex items-center justify-between border-t border-border px-5 py-3.5">
-              <span className="text-sm font-semibold text-foreground">{title}</span>
-              <span className="text-xs text-muted-foreground">PDF · Visual</span>
-            </figcaption>
-          </figure>
+            <div className="border-t border-border px-5 py-3.5">
+              <span className="text-sm font-semibold text-foreground">Espaço para imagem {i}</span>
+            </div>
+          </div>
         ))}
       </div>
     </Section>
   );
 }
 
-
-function FlowMini({ nodes, labels }: { nodes: Array<React.ComponentType<{ className?: string }>>; labels: string[] }) {
-  return (
-    <div className="grid w-full grid-cols-4 items-center gap-2">
-      {nodes.map((Icon, i) => (
-        <div key={i} className="flex flex-col items-center">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-[color:var(--brand)] shadow-xs">
-            <Icon className="h-4.5 w-4.5" />
-          </div>
-          <span className="mt-2 text-[10px] font-medium text-muted-foreground">{labels[i]}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
 
 /* ---------- Transformation (before/after) ---------- */
 
