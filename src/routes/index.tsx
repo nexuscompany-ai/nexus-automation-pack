@@ -4,7 +4,8 @@ import {
   Check, X, ArrowRight, ShieldCheck, Sparkles, Workflow,
   Compass, Zap, Boxes, LineChart, Target, Rocket, Layers,
   ChevronDown, Database, Cpu, GitBranch, BookOpen, Eye,
-  TrendingUp, Users, Clock, Award,
+  TrendingUp, Users, Clock, Award, Briefcase as BriefcaseIcon,
+  MessageSquare,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -444,7 +445,7 @@ function Modules() {
     },
     {
       tag: "Módulo 03",
-      icon: Briefcase,
+      icon: BriefcaseIcon,
       title: "Como transformar em serviço",
       bullets: ["Quem é o comprador ideal", "Como apresentar a solução", "Como gerar e comunicar valor", "Como fechar o projeto"],
     },
