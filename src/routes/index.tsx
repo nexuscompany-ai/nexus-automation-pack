@@ -46,7 +46,7 @@ function Section({ children, id, className = "" }: { children: React.ReactNode; 
 
 function Eyebrow({ children, icon: Icon }: { children: React.ReactNode; icon?: React.ComponentType<{ className?: string }> }) {
   return (
-    <div className="inline-flex items-center gap-2 rounded-full border border-border bg-white/70 px-3 py-1 text-xs font-medium text-muted-foreground shadow-xs backdrop-blur">
+    <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs font-medium text-muted-foreground shadow-xs backdrop-blur">
       {Icon ? <Icon className="h-3.5 w-3.5 text-[color:var(--brand)]" /> : <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--brand)]" />}
       <span className="tracking-wide">{children}</span>
     </div>
@@ -72,7 +72,7 @@ function GhostButton({ children, href = "#metodo" }: { children: React.ReactNode
   return (
     <a
       href={href}
-      className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-white px-5 py-3 text-sm font-semibold text-foreground shadow-xs transition-all hover:border-foreground/20 hover:bg-secondary"
+      className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-card px-5 py-3 text-sm font-semibold text-foreground shadow-xs transition-all hover:border-foreground/20 hover:bg-secondary"
     >
       {children}
     </a>
@@ -93,7 +93,7 @@ function SectionTitle({ eyebrow, title, sub, icon }: { eyebrow?: string; title: 
 
 function Nav() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-white/70 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-card/60 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         <a href="#top" className="flex items-center gap-2.5">
           <img src={logoAsset.url} alt="Nexus" className="h-8 w-8" />
@@ -151,7 +151,7 @@ function HeroMock() {
   return (
     <div className="relative mx-auto max-w-5xl">
       <div className="absolute -inset-x-8 -top-8 -bottom-8 -z-10 rounded-[2rem] bg-gradient-to-b from-[color:var(--brand)]/10 to-transparent blur-2xl" />
-      <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-[0_30px_80px_-30px_oklch(0.205_0.04_256/0.25)]">
+      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-[0_30px_80px_-30px_oklch(0.205_0.04_256/0.25)]">
         {/* Window chrome */}
         <div className="flex items-center justify-between border-b border-border bg-[color:var(--surface)] px-4 py-2.5">
           <div className="flex items-center gap-1.5">
@@ -159,7 +159,7 @@ function HeroMock() {
             <span className="h-2.5 w-2.5 rounded-full bg-yellow-400/70" />
             <span className="h-2.5 w-2.5 rounded-full bg-green-400/70" />
           </div>
-          <div className="rounded-md border border-border bg-white px-3 py-1 text-xs text-muted-foreground">nexus.app/workflows/qualificacao-leads</div>
+          <div className="rounded-md border border-border bg-card px-3 py-1 text-xs text-muted-foreground">nexus.app/workflows/qualificacao-leads</div>
           <div className="w-12" />
         </div>
         <div className="grid gap-0 md:grid-cols-[220px_1fr]">
@@ -174,21 +174,21 @@ function HeroMock() {
                 ["Resposta SDR · IA", false],
                 ["Relatórios Comerciais", false],
               ].map(([label, active]) => (
-                <li key={String(label)} className={`flex items-center gap-2 rounded-md px-2.5 py-1.5 ${active ? "bg-white text-foreground ring-soft" : "text-muted-foreground hover:bg-white/60"}`}>
+                <li key={String(label)} className={`flex items-center gap-2 rounded-md px-2.5 py-1.5 ${active ? "bg-card text-foreground ring-soft" : "text-muted-foreground hover:bg-card/60"}`}>
                   <Workflow className="h-3.5 w-3.5" /> {String(label)}
                 </li>
               ))}
             </ul>
           </aside>
           {/* Canvas */}
-          <div className="relative bg-white p-6">
+          <div className="relative bg-card p-6">
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-xs font-medium text-muted-foreground">Workflow</div>
                 <div className="text-lg font-semibold text-foreground">Qualificação de leads com IA</div>
               </div>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> ativo
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-2.5 py-1 text-xs font-medium text-emerald-300">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500/150 animate-pulse" /> ativo
               </span>
             </div>
             <FlowMock />
@@ -202,7 +202,7 @@ function HeroMock() {
 function FlowNode({ icon: Icon, title, subtitle, color = "brand" }: { icon: React.ComponentType<{ className?: string }>; title: string; subtitle: string; color?: "brand" | "slate" | "cyan" }) {
   const accent = color === "brand" ? "text-[color:var(--brand)] bg-[color:var(--brand)]/10" : color === "cyan" ? "text-[color:var(--brand-2)] bg-[color:var(--brand-2)]/10" : "text-foreground bg-secondary";
   return (
-    <div className="flex min-w-[160px] items-center gap-3 rounded-xl border border-border bg-white p-3 shadow-sm card-hover">
+    <div className="flex min-w-[160px] items-center gap-3 rounded-xl border border-border bg-card p-3 shadow-sm card-hover">
       <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${accent}`}>
         <Icon className="h-4.5 w-4.5" />
       </div>
@@ -298,30 +298,30 @@ function Problem() {
         title={<>Você está aprendendo automação… <span className="text-muted-foreground">mas ainda não sabe o que vender.</span></>}
       />
       <div className="mt-14 grid items-center gap-10 lg:grid-cols-[1.1fr_1fr]">
-        <div className="rounded-2xl border border-border bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
           <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Sua jornada hoje</div>
           <ol className="mt-4 space-y-3">
             {steps.map(({ label, icon: Icon }, i) => (
               <li key={label} className="flex items-center gap-3 rounded-xl border border-border bg-[color:var(--surface)] px-4 py-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-[color:var(--brand)] ring-soft">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-card text-[color:var(--brand)] ring-soft">
                   <Icon className="h-4 w-4" />
                 </div>
                 <span className="text-sm font-medium text-foreground">{label}</span>
                 <span className="ml-auto text-xs text-muted-foreground">passo {i + 1}</span>
               </li>
             ))}
-            <li className="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50/60 px-4 py-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-red-500 ring-soft">
+            <li className="flex items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-card text-destructive ring-soft">
                 <X className="h-4 w-4" />
               </div>
-              <span className="text-sm font-semibold text-red-700">Continua sem clientes</span>
+              <span className="text-sm font-semibold text-destructive">Continua sem clientes</span>
             </li>
           </ol>
         </div>
         <ul className="space-y-3">
           {pains.map((p) => (
-            <li key={p} className="flex items-start gap-3 rounded-xl border border-border bg-white p-4 shadow-xs card-hover">
-              <div className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-red-50 text-red-500">
+            <li key={p} className="flex items-start gap-3 rounded-xl border border-border bg-card p-4 shadow-xs card-hover">
+              <div className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-destructive/10 text-destructive">
                 <X className="h-3.5 w-3.5" />
               </div>
               <span className="text-sm text-foreground">{p}</span>
@@ -346,7 +346,7 @@ function RealPain() {
             O problema não é aprender automação. <br className="hidden md:block" />
             <span className="text-gradient">É não saber transformar conhecimento em dinheiro.</span>
           </h2>
-          <figure className="mx-auto mt-10 max-w-2xl rounded-2xl border border-border bg-white p-7 text-left shadow-md">
+          <figure className="mx-auto mt-10 max-w-2xl rounded-2xl border border-border bg-card p-7 text-left shadow-md">
             <div className="text-[color:var(--brand)] text-3xl leading-none">“</div>
             <blockquote className="-mt-2 text-lg font-medium leading-relaxed text-foreground">
               Tenho medo de passar meses estudando automação e descobrir que não consigo transformar isso em faturamento.
@@ -378,7 +378,7 @@ function Solution() {
       />
       <div className="mt-14 grid gap-4 md:grid-cols-4">
         {steps.map(({ icon: Icon, title, desc }, i) => (
-          <div key={title} className="group relative rounded-2xl border border-border bg-white p-6 shadow-sm card-hover">
+          <div key={title} className="group relative rounded-2xl border border-border bg-card p-6 shadow-sm card-hover">
             <div className="flex items-center justify-between">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl text-[color:var(--brand)]" style={{ background: "linear-gradient(135deg, oklch(0.546 0.21 263 / 0.10), oklch(0.72 0.14 230 / 0.10))" }}>
                 <Icon className="h-5 w-5" />
@@ -412,7 +412,7 @@ function Mechanism() {
       />
       <div className="mt-14 grid gap-5 md:grid-cols-3">
         {items.map(({ icon: Icon, title, desc, tag }) => (
-          <div key={title} className="relative overflow-hidden rounded-2xl border border-border bg-white p-7 shadow-sm card-hover">
+          <div key={title} className="relative overflow-hidden rounded-2xl border border-border bg-card p-7 shadow-sm card-hover">
             <div className="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-[color:var(--brand)]/40 to-transparent" />
             <span className="inline-flex rounded-full bg-[color:var(--brand)]/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-[color:var(--brand)]">{tag}</span>
             <div className="mt-5 flex h-11 w-11 items-center justify-center rounded-xl bg-[color:var(--surface)] text-foreground ring-soft">
@@ -460,7 +460,7 @@ function Modules() {
       />
       <div className="mt-14 grid gap-5 lg:grid-cols-3">
         {modules.map(({ tag, icon: Icon, title, bullets }) => (
-          <article key={tag} className="relative flex flex-col rounded-2xl border border-border bg-white p-7 shadow-sm card-hover">
+          <article key={tag} className="relative flex flex-col rounded-2xl border border-border bg-card p-7 shadow-sm card-hover">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{tag}</span>
               <div className="flex h-9 w-9 items-center justify-center rounded-lg text-[color:var(--brand)]" style={{ background: "linear-gradient(135deg, oklch(0.546 0.21 263 / 0.12), oklch(0.72 0.14 230 / 0.12))" }}>
@@ -504,7 +504,7 @@ function Gallery() {
       />
       <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         {items.map(({ title, node }) => (
-          <figure key={title} className="group overflow-hidden rounded-2xl border border-border bg-white shadow-sm card-hover">
+          <figure key={title} className="group overflow-hidden rounded-2xl border border-border bg-card shadow-sm card-hover">
             <div className="aspect-[4/3] bg-[color:var(--surface)] p-5">
               <div className="flex h-full flex-col">
                 <div className="mb-3 flex items-center gap-1.5">
@@ -532,7 +532,7 @@ function FlowMini({ nodes, labels }: { nodes: Array<React.ComponentType<{ classN
     <div className="grid w-full grid-cols-4 items-center gap-2">
       {nodes.map((Icon, i) => (
         <div key={i} className="flex flex-col items-center">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-white text-[color:var(--brand)] shadow-xs">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-[color:var(--brand)] shadow-xs">
             <Icon className="h-4.5 w-4.5" />
           </div>
           <span className="mt-2 text-[10px] font-medium text-muted-foreground">{labels[i]}</span>
@@ -570,12 +570,12 @@ function Transformation() {
           <ul className="mt-4 space-y-3">
             {before.map((b) => (
               <li key={b} className="flex items-start gap-3 text-sm text-foreground/80">
-                <X className="mt-0.5 h-4 w-4 shrink-0 text-red-500" /> {b}
+                <X className="mt-0.5 h-4 w-4 shrink-0 text-destructive" /> {b}
               </li>
             ))}
           </ul>
         </div>
-        <div className="relative overflow-hidden rounded-2xl border border-[color:var(--brand)]/20 bg-white p-7 shadow-md">
+        <div className="relative overflow-hidden rounded-2xl border border-[color:var(--brand)]/20 bg-card p-7 shadow-md">
           <div className="pointer-events-none absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-[color:var(--brand)] to-transparent" />
           <div className="text-xs font-semibold uppercase tracking-wider text-[color:var(--brand)]">Depois</div>
           <ul className="mt-4 space-y-3">
@@ -607,7 +607,7 @@ function Benefits() {
       <SectionTitle eyebrow="Benefícios" icon={Sparkles} title="Por que o pack acelera quem está começando" />
       <div className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {benefits.map(({ icon: Icon, title, desc }) => (
-          <div key={title} className="group rounded-2xl border border-border bg-white p-6 shadow-xs card-hover">
+          <div key={title} className="group rounded-2xl border border-border bg-card p-6 shadow-xs card-hover">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[color:var(--surface)] text-[color:var(--brand)] ring-soft transition-transform group-hover:scale-110">
               <Icon className="h-5 w-5" />
             </div>
@@ -635,7 +635,7 @@ function Offer() {
     <Section id="oferta">
       <SectionTitle eyebrow="Oferta" icon={Boxes} title="Tudo que você recebe" sub="Acesso imediato a uma biblioteca pensada para gerar resultado comercial." />
       <div className="mt-14 grid gap-6 lg:grid-cols-[1.1fr_1fr]">
-        <div className="rounded-2xl border border-border bg-white p-7 shadow-sm">
+        <div className="rounded-2xl border border-border bg-card p-7 shadow-sm">
           <ul className="grid gap-3 sm:grid-cols-2">
             {includes.map((it) => (
               <li key={it} className="flex items-start gap-3 rounded-xl border border-border bg-[color:var(--surface)] p-4">
@@ -647,7 +647,7 @@ function Offer() {
             ))}
           </ul>
         </div>
-        <div className="relative overflow-hidden rounded-2xl border border-[color:var(--brand)]/25 bg-white p-8 shadow-lg">
+        <div className="relative overflow-hidden rounded-2xl border border-[color:var(--brand)]/25 bg-card p-8 shadow-lg">
           <div className="pointer-events-none absolute -right-16 -top-16 h-60 w-60 rounded-full" style={{ background: "radial-gradient(circle, oklch(0.546 0.21 263 / 0.15), transparent 70%)" }} />
           <span className="silver-chip inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider">Acesso completo</span>
           <h3 className="mt-5 text-2xl font-bold tracking-tight text-foreground">Nexus Automation Pack</h3>
@@ -675,7 +675,7 @@ function Offer() {
 function Guarantee() {
   return (
     <Section id="garantia">
-      <div className="relative mx-auto max-w-3xl overflow-hidden rounded-3xl border border-border bg-white p-10 text-center shadow-sm">
+      <div className="relative mx-auto max-w-3xl overflow-hidden rounded-3xl border border-border bg-card p-10 text-center shadow-sm">
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl text-[color:var(--brand)]" style={{ background: "linear-gradient(135deg, oklch(0.546 0.21 263 / 0.12), oklch(0.72 0.14 230 / 0.12))" }}>
           <ShieldCheck className="h-7 w-7" />
         </div>
@@ -703,7 +703,7 @@ function FAQ() {
   return (
     <Section id="faq">
       <SectionTitle eyebrow="Perguntas frequentes" icon={Eye} title="Tudo que você precisa saber" />
-      <div className="mx-auto mt-12 max-w-3xl divide-y divide-border overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
+      <div className="mx-auto mt-12 max-w-3xl divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
         {faqs.map((item, i) => {
           const isOpen = open === i;
           return (
@@ -738,7 +738,7 @@ function FAQ() {
 function FinalCTA() {
   return (
     <Section id="final" className="!pb-32">
-      <div className="relative overflow-hidden rounded-3xl border border-border bg-foreground p-10 text-center text-white md:p-16">
+      <div className="relative overflow-hidden rounded-3xl border border-border bg-card p-10 text-center text-foreground md:p-16">
         <div className="pointer-events-none absolute inset-0 opacity-50" style={{ background: "radial-gradient(ellipse 60% 50% at 50% 0%, oklch(0.546 0.21 263 / 0.6), transparent 60%)" }} />
         <div className="pointer-events-none absolute inset-0 bg-grid opacity-[0.07]" />
         <div className="relative mx-auto max-w-3xl">
@@ -747,7 +747,7 @@ function FinalCTA() {
             Pare de aprender automação sem direção.<br />
             <span className="text-brand-gradient">Comece a construir soluções que empresas compram.</span>
           </h2>
-          <p className="mx-auto mt-5 max-w-xl text-white/70">
+          <p className="mx-auto mt-5 max-w-xl text-foreground/70">
             Acesso imediato. Garantia de 7 dias. Atualizações incluídas.
           </p>
           <div className="mt-8 flex justify-center">
