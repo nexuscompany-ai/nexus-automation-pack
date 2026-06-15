@@ -1,674 +1,988 @@
 import { createFileRoute } from "@tanstack/react-router";
 import logoAsset from "@/assets/logo_nexus.png.asset.json";
-import {
-  Check, X, ArrowRight, ShieldCheck, Sparkles, Workflow,
-  Compass, Zap, Boxes, LineChart, Target, Rocket, Layers,
-  ChevronDown, Database, Cpu, GitBranch, BookOpen, Eye,
-  TrendingUp, Users, Clock, Award, Briefcase as BriefcaseIcon,
-  MessageSquare,
-} from "lucide-react";
-import { useState } from "react";
+import imag1 from "@/assets/imag1.png";
+import imag2 from "@/assets/imag2.png";
+import mag3 from "@/assets/mag3.png";
+import { ArrowRight, Check, ChevronDown, ShieldCheck } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Nexus Automation Pack — Automações que o mercado realmente compra" },
-      { name: "description", content: "Biblioteca visual premium com +50 automações comerciais documentadas. Descubra o que empresas pagam, como funciona e como transformar conhecimento em faturamento." },
+      { title: "Nexus Automation Pack — Pare de aprender automação sem direção" },
+      { name: "description", content: "Descubra quais soluções empresas realmente compram e transforme conhecimento técnico em oportunidades reais de faturamento." },
       { property: "og:title", content: "Nexus Automation Pack" },
-      { property: "og:description", content: "O atalho entre aprender automação e conquistar seus primeiros clientes." },
+      { property: "og:description", content: "Pare de aprender automação sem direção. Descubra o que o mercado realmente compra." },
       { property: "og:image", content: logoAsset.url },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:image", content: logoAsset.url },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" },
       { rel: "icon", type: "image/png", href: logoAsset.url },
     ],
   }),
   component: Landing,
 });
 
-const CTA_PRIMARY = "Quero acessar agora";
-const CHECKOUT_URL = "#oferta";
+const CTA_URL = "#oferta";
+const CTA_LABEL = "Quero acessar agora";
 
-/* ---------- Primitives ---------- */
+/* ── COUNTDOWN ── */
+function useCountdown(targetMs: number) {
+  const calc = () => {
+    const diff = Math.max(0, targetMs - Date.now());
+    return {
+      d: Math.floor(diff / 86_400_000),
+      h: Math.floor((diff % 86_400_000) / 3_600_000),
+      m: Math.floor((diff % 3_600_000) / 60_000),
+      s: Math.floor((diff % 60_000) / 1_000),
+    };
+  };
+  const [t, setT] = useState(calc);
+  useEffect(() => {
+    const id = setInterval(() => setT(calc()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  return t;
+}
 
-function Section({ children, id, className = "" }: { children: React.ReactNode; id?: string; className?: string }) {
+const DEADLINE = (() => {
+  const KEY = "nap_deadline";
+  if (typeof window === "undefined") return Date.now() + 3 * 86_400_000;
+  const stored = localStorage.getItem(KEY);
+  if (stored) return Number(stored);
+  const d = Date.now() + 3 * 86_400_000;
+  localStorage.setItem(KEY, String(d));
+  return d;
+})();
+
+function AnnouncementBar() {
+  const { d, h, m, s } = useCountdown(DEADLINE);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const units = [
+    { v: pad(d), l: "Dias" },
+    { v: pad(h), l: "Horas" },
+    { v: pad(m), l: "Min" },
+    { v: pad(s), l: "Seg" },
+  ];
   return (
-    <section id={id} className={`relative mx-auto w-full max-w-6xl px-6 py-20 md:py-28 ${className}`}>
+    <div className="w-full" style={{ background: "linear-gradient(90deg, #991B1B 0%, #DC2626 50%, #991B1B 100%)" }}>
+      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-5 gap-y-1.5 px-4 py-3">
+        <span className="text-[12px] font-semibold text-white/90">⏳ Oferta de Lançamento — Acesso por tempo limitado</span>
+        <span className="hidden h-3 w-px bg-white/20 sm:block" />
+        <div className="flex items-center gap-1.5">
+          {units.map(({ v, l }, i) => (
+            <>
+              <div key={l} className="flex items-baseline gap-0.5">
+                <span className="text-[15px] font-extrabold tabular-nums text-white">{v}</span>
+                <span className="text-[9px] font-medium uppercase text-white/50">{l}</span>
+              </div>
+              {i < 3 && <span key={`s${i}`} className="text-[13px] font-bold text-white/30">:</span>}
+            </>
+          ))}
+        </div>
+        <span className="hidden h-3 w-px bg-white/20 sm:block" />
+        <a href={CTA_URL} className="rounded-md bg-white px-3 py-1 text-[11px] font-bold text-red-700 transition-opacity hover:opacity-90">
+          Garantir acesso
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function useScrollReveal() {
+  useEffect(() => {
+    const els = document.querySelectorAll<HTMLElement>(".sr");
+    if (!els.length) return;
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => { if (e.isIntersecting) (e.target as HTMLElement).classList.add("visible"); }),
+      { threshold: 0.07, rootMargin: "0px 0px -32px 0px" }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+}
+
+function Wrap({ children, id, className = "" }: { children: React.ReactNode; id?: string; className?: string }) {
+  return (
+    <section id={id} className={`mx-auto w-full max-w-5xl px-6 py-20 md:py-28 ${className}`}>
       {children}
     </section>
   );
 }
 
-function Eyebrow({ children, icon: Icon }: { children: React.ReactNode; icon?: React.ComponentType<{ className?: string }> }) {
+/* ── Primitivos ── */
+function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs font-medium text-muted-foreground shadow-xs backdrop-blur">
-      {Icon ? <Icon className="h-3.5 w-3.5 text-[color:var(--brand)]" /> : <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--brand)]" />}
-      <span className="tracking-wide">{children}</span>
-    </div>
+    <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6D28D9]">
+      <span className="h-px w-5 bg-gradient-to-r from-[#6D28D9] to-[#A78BFA] rounded-full" />
+      {children}
+    </span>
   );
 }
 
-function PrimaryButton({ children, href = CHECKOUT_URL, size = "lg" }: { children: React.ReactNode; href?: string; size?: "lg" | "md" }) {
-  const pad = size === "lg" ? "px-6 py-3.5 text-[15px]" : "px-5 py-2.5 text-sm";
+function Btn({ children, href = CTA_URL, lg = false }: { children: React.ReactNode; href?: string; lg?: boolean }) {
+  const size = lg ? "px-8 py-[1.0625rem] text-[1rem]" : "px-5 py-2.5 text-sm";
   return (
     <a
       href={href}
-      className={`group relative inline-flex items-center justify-center gap-2 rounded-full font-semibold text-primary-foreground ${pad} transition-all duration-300 hover:-translate-y-[1px] hover:shadow-[0_18px_50px_-12px_oklch(0.546_0.21_263/0.55)]`}
-      style={{ background: "var(--gradient-brand)" }}
+      className={`group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-lg font-bold text-white transition-all duration-200 hover:-translate-y-px ${size}`}
+      style={{
+        background: "linear-gradient(135deg, #6D28D9 0%, #7C3AED 100%)",
+        boxShadow: "0 2px 8px rgb(109 40 217 / 0.35), 0 1px 3px rgb(109 40 217 / 0.20), inset 0 1px 0 rgb(255 255 255 / 0.12)",
+      }}
     >
-      <span className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "linear-gradient(135deg, oklch(0.6 0.21 263), oklch(0.78 0.14 230))" }} />
+      <span className="absolute inset-0 translate-x-[-110%] bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-500 group-hover:translate-x-[110%]" />
       <span className="relative">{children}</span>
-      <ArrowRight className="relative h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+      <ArrowRight className="relative h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
     </a>
   );
 }
 
-function GhostButton({ children, href = "#metodo" }: { children: React.ReactNode; href?: string }) {
+function GhostBtn({ children, href }: { children: React.ReactNode; href: string }) {
   return (
-    <a
-      href={href}
-      className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-card px-5 py-3 text-sm font-semibold text-foreground shadow-xs transition-all hover:border-foreground/20 hover:bg-secondary"
-    >
+    <a href={href} className="inline-flex items-center gap-1.5 rounded-lg border border-[#E5E7EB] px-5 py-2.5 text-sm font-medium text-[#6B7280] transition-all duration-200 hover:border-[#C0C0C0] hover:text-[#111827]">
       {children}
     </a>
   );
 }
 
-function SectionTitle({ eyebrow, title, sub, icon }: { eyebrow?: string; title: React.ReactNode; sub?: React.ReactNode; icon?: React.ComponentType<{ className?: string }> }) {
+/* ── Mockup do produto ── */
+function ProductMockup() {
   return (
-    <div className="mx-auto max-w-3xl text-center">
-      {eyebrow && <div className="mb-5 flex justify-center"><Eyebrow icon={icon}>{eyebrow}</Eyebrow></div>}
-      <h2 className="text-balance text-3xl font-bold tracking-tight text-foreground md:text-5xl">{title}</h2>
-      {sub && <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground md:text-lg">{sub}</p>}
+    <div className="relative w-full select-none pb-8" style={{ perspective: "1000px" }}>
+      {/* Glow roxo embaixo do mockup */}
+      <div
+        className="absolute -bottom-2 left-1/2 h-20 w-3/4 -translate-x-1/2 rounded-full blur-3xl"
+        style={{ background: "rgb(109 40 217 / 0.20)" }}
+      />
+
+      {/* Página 3 — fundo */}
+      <div
+        className="absolute top-4 left-[5%] w-[86%] overflow-hidden rounded-xl border border-[#E5E7EB]"
+        style={{ zIndex: 1, transform: "rotateY(3deg) rotateZ(-1.2deg)", boxShadow: "0 4px 20px rgb(0 0 0 / 0.07)" }}
+      >
+        <img src={mag3} alt="" className="w-full object-cover" style={{ height: "260px", filter: "brightness(0.88) saturate(0.9)" }} />
+      </div>
+
+      {/* Página 2 — meio */}
+      <div
+        className="absolute top-2 left-[2%] w-[93%] overflow-hidden rounded-xl border border-[#E5E7EB]"
+        style={{ zIndex: 2, transform: "rotateY(1.5deg) rotateZ(-0.4deg)", boxShadow: "0 6px 28px rgb(0 0 0 / 0.09)" }}
+      >
+        <img src={imag2} alt="" className="w-full object-cover" style={{ height: "268px", filter: "brightness(0.93)" }} />
+      </div>
+
+      {/* Página 1 — frente */}
+      <div
+        className="relative w-full overflow-hidden rounded-2xl border border-[#C4B5FD]"
+        style={{
+          zIndex: 3,
+          boxShadow: "0 4px 16px rgb(0 0 0 / 0.06), 0 16px 56px rgb(0 0 0 / 0.10), 0 32px 80px rgb(109 40 217 / 0.12)",
+        }}
+      >
+        <img src={imag1} alt="Nexus Automation Pack" className="w-full object-cover" style={{ height: "300px" }} />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white/70 to-transparent" />
+
+        {/* Badge marca */}
+        <div className="absolute left-3.5 top-3.5 flex items-center gap-2 rounded-lg border border-[#E5E7EB] bg-white/95 px-3 py-1.5 shadow-sm backdrop-blur-sm">
+          <img src={logoAsset.url} alt="" className="h-4 w-4" />
+          <span className="text-[11px] font-semibold text-[#111827]">Nexus Automation Pack</span>
+        </div>
+
+        {/* Pill +50 */}
+        <div
+          className="absolute right-3.5 top-3.5 rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-white"
+          style={{ background: "linear-gradient(135deg, #6D28D9, #7C3AED)", boxShadow: "0 2px 8px rgb(109 40 217 / 0.40)" }}
+        >
+          +50 automações
+        </div>
+      </div>
     </div>
   );
 }
 
-/* ---------- Nav ---------- */
-
+/* ── NAV ── */
 function Nav() {
+  const [solid, setSolid] = useState(false);
+  useEffect(() => {
+    const fn = () => setSolid(window.scrollY > 20);
+    window.addEventListener("scroll", fn, { passive: true });
+    return () => window.removeEventListener("scroll", fn);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-card/60 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <a href="#top" className="flex items-center gap-2.5">
-          <img src={logoAsset.url} alt="Nexus" className="h-8 w-8" />
-          <span className="text-[15px] font-semibold tracking-tight text-foreground">Nexus<span className="text-muted-foreground"> Automation Pack</span></span>
+    <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${solid ? "border-b border-[#E5E7EB] bg-white/95 backdrop-blur-md shadow-[0_1px_8px_rgb(0_0_0/0.06)]" : "bg-white"}`}>
+      <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
+        <a href="#top" className="flex items-center gap-2">
+          <img src={logoAsset.url} alt="Nexus" className="h-6 w-6" />
+          <span className="text-sm font-bold tracking-tight text-[#111827]">
+            Nexus <span className="font-normal text-[#9CA3AF]">Automation Pack</span>
+          </span>
         </a>
-        <nav className="hidden items-center gap-7 text-sm text-muted-foreground md:flex">
-          <a href="#metodo" className="hover:text-foreground transition-colors">Método</a>
-          <a href="#modulos" className="hover:text-foreground transition-colors">Módulos</a>
-          <a href="#oferta" className="hover:text-foreground transition-colors">Oferta</a>
-          <a href="#faq" className="hover:text-foreground transition-colors">FAQ</a>
+        <nav className="hidden items-center gap-7 md:flex">
+          {[["#problema","O Problema"],["#modulos","O Método"],["#conteudo","O Pack"],["#oferta","Oferta"],["#faq","FAQ"]].map(([h,l]) => (
+            <a key={h} href={h} className="text-sm text-[#6B7280] transition-colors hover:text-[#111827]">{l}</a>
+          ))}
         </nav>
-        <PrimaryButton size="md">Acessar</PrimaryButton>
+        <Btn>Acessar agora</Btn>
       </div>
     </header>
   );
 }
 
-/* ---------- Hero ---------- */
+/* ── PLATFORM CAROUSEL ── */
+const SI = "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons";
+const PLATFORMS: { name: string; src: string; bg: string }[] = [
+  { name: "n8n",             src: `${SI}/n8n.svg`,            bg: "#EA4B71" },
+  { name: "OpenAI",          src: `${SI}/openai.svg`,         bg: "#000000" },
+  { name: "Google Sheets",   src: `${SI}/googlesheets.svg`,   bg: "#34A853" },
+  { name: "Gmail",           src: `${SI}/gmail.svg`,          bg: "#EA4335" },
+  { name: "Google Drive",    src: `${SI}/googledrive.svg`,    bg: "#4285F4" },
+  { name: "WhatsApp",        src: `${SI}/whatsapp.svg`,       bg: "#25D366" },
+  { name: "Notion",          src: `${SI}/notion.svg`,         bg: "#191919" },
+  { name: "Slack",           src: `${SI}/slack.svg`,          bg: "#4A154B" },
+  { name: "HubSpot",         src: `${SI}/hubspot.svg`,        bg: "#FF7A59" },
+  { name: "Discord",         src: `${SI}/discord.svg`,        bg: "#5865F2" },
+  { name: "Airtable",        src: `${SI}/airtable.svg`,       bg: "#18BFFF" },
+  { name: "Make",            src: `${SI}/make.svg`,           bg: "#6D00CC" },
+  { name: "Zapier",          src: `${SI}/zapier.svg`,         bg: "#FF4A00" },
+  { name: "Google Calendar", src: `${SI}/googlecalendar.svg`, bg: "#4285F4" },
+  { name: "Telegram",        src: `${SI}/telegram.svg`,       bg: "#26A5E4" },
+];
 
+function PlatformCarousel() {
+  const doubled = [...PLATFORMS, ...PLATFORMS];
+  return (
+    <div
+      className="w-full overflow-hidden"
+      style={{
+        maskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
+        WebkitMaskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
+      }}
+    >
+      <div className="marquee-track">
+        {doubled.map(({ name, src, bg }, i) => (
+          <div key={`${name}-${i}`} className="group mx-6 flex shrink-0 flex-col items-center gap-2">
+            <div
+              className="flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-200 group-hover:scale-110 group-hover:opacity-100"
+              style={{ background: bg, opacity: 0.82 }}
+            >
+              <img
+                src={src}
+                alt={name}
+                className="h-5 w-5 object-contain"
+                style={{ filter: "brightness(0) invert(1)" }}
+              />
+            </div>
+            <span className="text-[10px] font-medium whitespace-nowrap text-[#9CA3AF] group-hover:text-[#6B7280] transition-colors duration-200">
+              {name}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── 1. HERO ── */
 function Hero() {
   return (
-    <div id="top" className="relative overflow-hidden">
-      <div className="pointer-events-none absolute inset-0 hero-aurora" />
-      <div className="pointer-events-none absolute inset-0 bg-grid opacity-60" />
-      <Section className="!py-24 md:!py-32">
-        <div className="reveal-blur mx-auto flex max-w-3xl flex-col items-center text-center">
-          <h1 className="mt-6 text-balance text-[2.5rem] font-bold leading-[1.05] tracking-tight text-foreground md:text-6xl lg:text-7xl">
-            O atalho entre <span className="text-brand-gradient">aprender automação</span> e conquistar seus primeiros clientes.
+    <div id="top" className="relative overflow-hidden bg-white">
+      {/* Radial glow sutil */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[600px]" style={{ background: "radial-gradient(ellipse 70% 50% at 50% -5%, rgb(109 40 217 / 0.08), transparent 70%)" }} />
+
+      <div className="mx-auto w-full max-w-5xl px-6 pt-16 pb-0">
+
+        {/* Badge */}
+        <div className="flex justify-center" style={{ animation: "fade-up 0.6s cubic-bezier(0.25,0.46,0.45,0.94) both" }}>
+          <span
+            className="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em]"
+            style={{ borderColor: "#C4B5FD", color: "#6D28D9", background: "#F5F3FF" }}
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-[#6D28D9]" />
+            Nexus Automation Pack
+          </span>
+        </div>
+
+        {/* Headline */}
+        <div className="mt-6 text-center" style={{ animation: "fade-up 0.7s cubic-bezier(0.25,0.46,0.45,0.94) 0.08s both" }}>
+          <h1
+            className="mx-auto max-w-4xl"
+            style={{ fontSize: "clamp(2.2rem,5.2vw,3.75rem)", fontWeight: 800, lineHeight: 1.05, letterSpacing: "-0.03em", color: "#111827" }}
+          >
+            Pare de aprender automação{" "}
+            <span style={{ background: "linear-gradient(135deg, #6D28D9 0%, #7C3AED 50%, #A78BFA 100%)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>
+              sem direção.
+            </span>
           </h1>
-          <p className="mt-6 max-w-2xl text-pretty text-base text-muted-foreground md:text-lg">
-            Descubra quais automações empresas realmente compram e transforme conhecimento técnico em oportunidades reais de faturamento.
+        </div>
+
+        {/* Vídeo */}
+        <div
+          className="relative mx-auto mt-10 w-full max-w-4xl"
+          style={{ animation: "fade-up 0.8s cubic-bezier(0.25,0.46,0.45,0.94) 0.18s both" }}
+        >
+          {/* Glow atrás do vídeo */}
+          <div
+            className="pointer-events-none absolute -inset-4 rounded-3xl blur-3xl"
+            style={{ background: "rgb(109 40 217 / 0.12)", zIndex: 0 }}
+          />
+          <div
+            className="relative overflow-hidden rounded-2xl"
+            style={{
+              zIndex: 1,
+              aspectRatio: "16 / 9",
+              border: "1px solid #C4B5FD",
+              boxShadow: "0 4px 24px rgb(0 0 0 / 0.07), 0 20px 60px rgb(109 40 217 / 0.14), 0 1px 0 rgb(255 255 255 / 0.8) inset",
+              background: "#0f0f11",
+            }}
+          >
+            {/* Placeholder elegante — substituir src pelo embed real */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-gradient-to-br from-[#1a1025] via-[#0f0a1a] to-[#0a0a14]">
+              <div
+                className="flex h-16 w-16 items-center justify-center rounded-full border border-white/10 backdrop-blur-sm transition-transform duration-200 hover:scale-105"
+                style={{ background: "rgba(109,40,217,0.5)", boxShadow: "0 0 32px rgb(109 40 217 / 0.50)" }}
+              >
+                <svg viewBox="0 0 24 24" fill="white" className="h-7 w-7 translate-x-0.5">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+              <span className="text-[13px] font-medium text-white/50">Vídeo de demonstração</span>
+            </div>
+            {/* Para ativar: substituir o div acima por <iframe src="..." className="h-full w-full" allowFullScreen /> */}
+          </div>
+        </div>
+
+        {/* Descrição */}
+        <div
+          className="mx-auto mt-8 max-w-2xl text-center"
+          style={{ animation: "fade-up 0.7s cubic-bezier(0.25,0.46,0.45,0.94) 0.28s both" }}
+        >
+          <p className="text-[1.0625rem] leading-relaxed text-[#6B7280]">
+            Descubra quais soluções empresas realmente compram e transforme conhecimento técnico em oportunidades reais de faturamento.
           </p>
-          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row">
-            <PrimaryButton>{CTA_PRIMARY}</PrimaryButton>
-            <GhostButton href="#metodo">Ver como funciona</GhostButton>
-          </div>
-          <div className="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
-            <span className="inline-flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5 text-[color:var(--brand)]" /> Garantia de 7 dias</span>
-            <span className="inline-flex items-center gap-1.5"><Zap className="h-3.5 w-3.5 text-[color:var(--brand)]" /> Acesso imediato</span>
-            <span className="inline-flex items-center gap-1.5"><Layers className="h-3.5 w-3.5 text-[color:var(--brand)]" /> Atualizações incluídas</span>
-          </div>
         </div>
 
-        {/* Video placeholder */}
-        <div className="reveal mt-16 [animation-delay:200ms]">
-          <div className="relative mx-auto max-w-5xl">
-            <div className="absolute -inset-x-8 -top-8 -bottom-8 -z-10 rounded-[2rem] bg-gradient-to-b from-[color:var(--brand)]/10 to-transparent blur-2xl" />
-            <div className="aspect-video w-full rounded-2xl border border-border bg-[color:var(--surface)] shadow-[0_30px_80px_-30px_oklch(0.205_0.04_256/0.25)] flex items-center justify-center">
-              <div className="text-center">
-                <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-[color:var(--brand)]/10">
-                  <svg className="h-8 w-8 text-[color:var(--brand)]" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
-                </div>
-                <p className="mt-4 text-sm text-muted-foreground">Vídeo será anexado em breve</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Section>
-    </div>
-  );
-}
-
-/* ---------- Logos / Social proof ---------- */
-
-function LogosStrip() {
-  const logos = ["n8n", "Zapier", "Make", "OpenAI", "Slack", "HubSpot", "Notion", "Airtable"];
-  return (
-    <div className="border-y border-border bg-[color:var(--surface)]">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-6 py-10">
-        <span className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">Construído sobre o stack que o mercado já usa</span>
-        <div className="grid w-full grid-cols-4 items-center gap-x-6 gap-y-4 md:grid-cols-8">
-          {logos.map((l) => (
-            <div key={l} className="text-center text-sm font-semibold text-muted-foreground/70 transition-colors hover:text-foreground">
-              {l}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ---------- Problem ---------- */
-
-function Problem() {
-  const steps = [
-    { label: "Aprende n8n", icon: Workflow },
-    { label: "Aprende APIs", icon: Database },
-    { label: "Aprende IA", icon: Cpu },
-    { label: "Aprende workflows", icon: GitBranch },
-  ];
-  const pains = [
-    "Não sabe quais automações têm demanda real",
-    "Não sabe quanto cobrar por um projeto",
-    "Não sabe como estruturar entregas",
-    "Não sabe como apresentar soluções",
-    "Não sabe por onde efetivamente começar",
-  ];
-  return (
-    <Section id="problema">
-      <SectionTitle
-        eyebrow="O problema"
-        icon={Target}
-        title={<>Você está aprendendo automação… <span className="text-muted-foreground">mas ainda não sabe o que vender.</span></>}
-      />
-      <div className="mt-14 grid items-center gap-10 lg:grid-cols-[1.1fr_1fr]">
-        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-          <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Sua jornada hoje</div>
-          <ol className="mt-4 space-y-3">
-            {steps.map(({ label, icon: Icon }, i) => (
-              <li key={label} className="flex items-center gap-3 rounded-xl border border-border bg-[color:var(--surface)] px-4 py-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-card text-[color:var(--brand)] ring-soft">
-                  <Icon className="h-4 w-4" />
-                </div>
-                <span className="text-sm font-medium text-foreground">{label}</span>
-                <span className="ml-auto text-xs text-muted-foreground">passo {i + 1}</span>
-              </li>
+        {/* CTA */}
+        <div
+          className="mt-8 flex flex-col items-center gap-4"
+          style={{ animation: "fade-up 0.7s cubic-bezier(0.25,0.46,0.45,0.94) 0.36s both" }}
+        >
+          <a
+            href={CTA_URL}
+            className="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-xl px-10 py-4 text-[1rem] font-bold text-white transition-all duration-200 hover:-translate-y-px"
+            style={{
+              background: "linear-gradient(135deg, #6D28D9 0%, #8B5CF6 100%)",
+              boxShadow: "0 2px 8px rgb(109 40 217 / 0.40), 0 8px 24px rgb(109 40 217 / 0.22), inset 0 1px 0 rgb(255 255 255 / 0.14)",
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 4px 16px rgb(109 40 217 / 0.55), 0 12px 32px rgb(109 40 217 / 0.30), inset 0 1px 0 rgb(255 255 255 / 0.14)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 2px 8px rgb(109 40 217 / 0.40), 0 8px 24px rgb(109 40 217 / 0.22), inset 0 1px 0 rgb(255 255 255 / 0.14)"; }}
+          >
+            <span className="absolute inset-0 translate-x-[-110%] bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-500 group-hover:translate-x-[110%]" />
+            <span className="relative">Quero acessar agora</span>
+            <ArrowRight className="relative h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+          </a>
+          <div className="flex flex-wrap justify-center items-center gap-x-5 gap-y-1.5 text-[13px] text-[#9CA3AF]">
+            {["Garantia de 7 dias", "Acesso imediato", "Pagamento único"].map((t) => (
+              <span key={t} className="flex items-center gap-1.5">
+                <Check className="h-3.5 w-3.5 text-[#6D28D9]" /> {t}
+              </span>
             ))}
-            <li className="flex items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-card text-destructive ring-soft">
-                <X className="h-4 w-4" />
-              </div>
-              <span className="text-sm font-semibold text-destructive">Continua sem clientes</span>
-            </li>
-          </ol>
+          </div>
         </div>
-        <ul className="space-y-3">
-          {pains.map((p) => (
-            <li key={p} className="flex items-start gap-3 rounded-xl border border-border bg-card p-4 shadow-xs card-hover">
-              <div className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-                <X className="h-3.5 w-3.5" />
-              </div>
-              <span className="text-sm text-foreground">{p}</span>
-            </li>
-          ))}
-        </ul>
+
+        {/* Carrossel de plataformas */}
+        <div
+          className="mt-12 pb-12"
+          style={{ animation: "fade-up 0.7s cubic-bezier(0.25,0.46,0.45,0.94) 0.44s both" }}
+        >
+          <p className="mb-5 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-[#C0C0C0]">
+            Automações documentadas para essas plataformas
+          </p>
+          <PlatformCarousel />
+        </div>
       </div>
-    </Section>
+    </div>
   );
 }
 
-/* ---------- Real Pain ---------- */
-
-function RealPain() {
+/* ── 2. PROBLEMA ── */
+function Problem() {
   return (
-    <Section id="dor">
-      <div className="relative overflow-hidden rounded-3xl border border-border bg-[color:var(--surface)] p-10 md:p-16">
-        <div className="pointer-events-none absolute inset-0 bg-dots opacity-60" />
-        <div className="relative mx-auto max-w-3xl text-center">
-          <Eyebrow icon={Eye}>A dor real</Eyebrow>
-          <h2 className="mt-5 text-balance text-3xl font-bold tracking-tight text-foreground md:text-5xl">
-            O problema não é aprender automação. <br className="hidden md:block" />
-            <span className="text-gradient">É não saber transformar conhecimento em dinheiro.</span>
+    <div id="problema" className="bg-white">
+      <Wrap>
+        {/* Cabeçalho */}
+        <div className="sr mx-auto max-w-2xl text-center">
+          <span
+            className="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em]"
+            style={{ borderColor: "#C4B5FD", color: "#6D28D9", background: "#F5F3FF" }}
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-[#6D28D9]" />
+            O Problema
+          </span>
+          <h2
+            className="mt-5"
+            style={{ fontSize: "clamp(1.9rem,4vw,3rem)", fontWeight: 800, lineHeight: 1.05, letterSpacing: "-0.03em", color: "#111827" }}
+          >
+            O mercado não paga por conhecimento.<br />O mercado paga por soluções.
           </h2>
-          <figure className="mx-auto mt-10 max-w-2xl rounded-2xl border border-border bg-card p-7 text-left shadow-md">
-            <div className="text-[color:var(--brand)] text-3xl leading-none">“</div>
-            <blockquote className="-mt-2 text-lg font-medium leading-relaxed text-foreground">
-              Tenho medo de passar meses estudando automação e descobrir que não consigo transformar isso em faturamento.
-            </blockquote>
-            <figcaption className="mt-4 text-xs font-medium uppercase tracking-wider text-muted-foreground">— você, todo domingo à noite</figcaption>
-          </figure>
+          <p className="mt-5 text-[1.0625rem] leading-relaxed text-[#6B7280]">
+            Você pode aprender n8n. Pode aprender IA. Pode aprender APIs e workflows.<br className="hidden sm:block" />
+            Mas se não souber quais problemas resolver, para quem vender e como apresentar uma solução,<br className="hidden sm:block" />
+            continuará preso na fase do aprendizado.
+          </p>
         </div>
-      </div>
-    </Section>
-  );
-}
 
-/* ---------- Solution ---------- */
-
-function Solution() {
-  const steps = [
-    { icon: Target, title: "Problema", desc: "O que a empresa sente todos os dias." },
-    { icon: Sparkles, title: "Solução", desc: "Qual automação resolve, com clareza." },
-    { icon: Workflow, title: "Workflow", desc: "Fluxograma visual: entrada → saída." },
-    { icon: Rocket, title: "Aplicação comercial", desc: "Como vender, para quem, por quanto." },
-  ];
-  return (
-    <Section id="solucao">
-      <SectionTitle
-        eyebrow="A solução"
-        icon={Boxes}
-        title={<>Conheça o <span className="text-brand-gradient">Nexus Automation Pack</span></>}
-        sub="Uma biblioteca visual criada para mostrar exatamente quais automações possuem potencial comercial — e como aplicá-las."
-      />
-      <div className="mt-14 grid gap-4 md:grid-cols-4">
-        {steps.map(({ icon: Icon, title, desc }, i) => (
-          <div key={title} className="group relative rounded-2xl border border-border bg-card p-6 shadow-sm card-hover">
-            <div className="flex items-center justify-between">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl text-[color:var(--brand)]" style={{ background: "linear-gradient(135deg, oklch(0.546 0.21 263 / 0.10), oklch(0.72 0.14 230 / 0.10))" }}>
-                <Icon className="h-5 w-5" />
-              </div>
-              <span className="text-xs font-semibold text-muted-foreground">0{i + 1}</span>
+        {/* Imagem principal */}
+        <div
+          className="sr mt-14 mx-auto w-full overflow-hidden"
+          style={{
+            maxWidth: "900px",
+            borderRadius: "20px",
+            boxShadow: "0 8px 40px rgb(0 0 0 / 0.08), 0 2px 8px rgb(109 40 217 / 0.10)",
+          }}
+        >
+          {/* Placeholder — substituir pelo <img> ou <Image> real */}
+          <div
+            className="flex w-full flex-col items-center justify-center gap-3"
+            style={{
+              aspectRatio: "16 / 9",
+              background: "linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 60%, #DDD6FE 100%)",
+            }}
+          >
+            <div
+              className="flex h-14 w-14 items-center justify-center rounded-2xl"
+              style={{ background: "linear-gradient(135deg, #6D28D9, #A78BFA)", opacity: 0.35 }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" className="h-7 w-7">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <path d="M3 9h18M9 21V9" />
+              </svg>
             </div>
-            <h3 className="mt-5 text-base font-semibold text-foreground">{title}</h3>
-            <p className="mt-1.5 text-sm text-muted-foreground">{desc}</p>
+            <span className="text-[13px] font-medium text-[#A78BFA]">&lt;Image Placeholder&gt;</span>
           </div>
-        ))}
-      </div>
-    </Section>
+        </div>
+      </Wrap>
+    </div>
   );
 }
 
-/* ---------- Mechanism ---------- */
-
+/* ── 3. SOLUÇÃO ── */
 function Mechanism() {
-  const items = [
-    { icon: TrendingUp, title: "O que o mercado compra", desc: "Mapeamos automações com demanda real, por nicho e por porte de empresa.", tag: "Demanda" },
-    { icon: Workflow, title: "Como a automação funciona", desc: "Cada caso vem com fluxograma, entradas, decisões e saídas.", tag: "Arquitetura" },
-    { icon: Award, title: "Como transformar em serviço", desc: "Quem compra, como apresentar, como precificar e como entregar.", tag: "Comercial" },
+  const steps = [
+    { n: "01", title: "Entenda a automação", sub: "Visualize o problema. Compreenda a lógica. Entenda o fluxo completo.", color: "#6D28D9" },
+    { n: "02", title: "Descubra o potencial comercial", sub: "Veja como a solução pode ser apresentada para empresas. Entenda onde existe demanda.", color: "#6D28D9" },
+    { n: "03", title: "Saiba quem compra", sub: "Descubra quais nichos têm interesse. Identifique oportunidades que normalmente passam despercebidas.", color: "#6D28D9" },
   ];
   return (
-    <Section id="metodo">
-      <SectionTitle
-        eyebrow="Mecanismo único"
-        icon={Compass}
-        title={<>Pare de estudar ferramentas. <span className="text-muted-foreground">Comece a estudar oportunidades.</span></>}
-        sub="Cada automação do pack responde a três perguntas que ferramentas isoladas nunca respondem."
-      />
-      <div className="mt-14 grid gap-5 md:grid-cols-3">
-        {items.map(({ icon: Icon, title, desc, tag }) => (
-          <div key={title} className="relative overflow-hidden rounded-2xl border border-border bg-card p-7 shadow-sm card-hover">
-            <div className="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-[color:var(--brand)]/40 to-transparent" />
-            <span className="inline-flex rounded-full bg-[color:var(--brand)]/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-[color:var(--brand)]">{tag}</span>
-            <div className="mt-5 flex h-11 w-11 items-center justify-center rounded-xl bg-[color:var(--surface)] text-foreground ring-soft">
-              <Icon className="h-5 w-5" />
-            </div>
-            <h3 className="mt-5 text-lg font-semibold text-foreground">{title}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{desc}</p>
+    <div id="solucao" className="bg-white">
+      <Wrap>
+        <div className="grid items-start gap-14 lg:grid-cols-2">
+          <div>
+            <div className="sr"><Eyebrow>A solução</Eyebrow></div>
+            <h2 className="sr sr-delay-1 mt-4" style={{ fontSize: "clamp(1.75rem,3.5vw,2.5rem)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.025em", color: "#111827" }}>
+              Transforme aprendizado em oportunidade.
+            </h2>
+            <p className="sr sr-delay-2 mt-4 text-base leading-relaxed text-[#6B7280]">
+              O objetivo não é aprender mais uma ferramenta. É desenvolver visão comercial. Entender o que tem demanda, identificar oportunidades e aumentar suas chances de conquistar clientes reais.
+            </p>
+            <div className="sr sr-delay-3 mt-8"><Btn lg>{CTA_LABEL}</Btn></div>
           </div>
-        ))}
-      </div>
-    </Section>
+
+          <div className="space-y-3">
+            {steps.map(({ n, title, sub, color }, i) => (
+              <div key={n} className={`sr sr-delay-${i+1} flex items-start gap-4 rounded-xl border border-[#E5E7EB] bg-[#F8FAFC] px-5 py-4 transition-all duration-200 hover:border-[#C4B5FD] hover:shadow-[0_4px_16px_rgb(109_40_217/0.08)]`}>
+                <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#E5E7EB] bg-white shadow-sm">
+                  <span className="text-[11px] font-bold" style={{ color }}>{n}</span>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-[#111827]">{title}</p>
+                  <p className="mt-0.5 text-xs text-[#9CA3AF]">{sub}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Wrap>
+    </div>
   );
 }
 
-/* ---------- Modules ---------- */
-
+/* ── 4. MÓDULOS ── */
 function Modules() {
-  const modules = [
-    {
-      tag: "Módulo 01",
-      icon: LineChart,
-      title: "O que o mercado compra",
-      bullets: ["Casos reais por nicho", "Oportunidades por porte de empresa", "Aplicações empresariais validadas", "Mapa de demanda comercial"],
-    },
-    {
-      tag: "Módulo 02",
-      icon: Workflow,
-      title: "Como a automação funciona",
-      bullets: ["Fluxogramas detalhados", "Arquitetura passo a passo", "Entradas, processamentos e decisões", "Saídas e integrações"],
-    },
-    {
-      tag: "Módulo 03",
-      icon: BriefcaseIcon,
-      title: "Como transformar em serviço",
-      bullets: ["Quem é o comprador ideal", "Como apresentar a solução", "Como gerar e comunicar valor", "Como fechar o projeto"],
-    },
+  const mods = [
+    { n: "01", tag: "Visão comercial", title: "Entenda a automação", desc: "Visualize o problema que cada solução resolve. Compreenda a lógica por trás do processo. Entenda o fluxo completo — antes de apresentar para qualquer cliente.", img: imag1 },
+    { n: "02", tag: "Potencial de mercado", title: "Descubra o potencial comercial", desc: "Veja como a solução pode ser apresentada para empresas. Entenda onde existe demanda real e como transformar conhecimento em uma oferta concreta.", img: imag2 },
+    { n: "03", tag: "Oportunidades reais", title: "Saiba quem compra", desc: "Descubra quais nichos têm interesse naquilo que você sabe fazer. Identifique oportunidades que normalmente passam despercebidas.", img: mag3 },
   ];
   return (
-    <Section id="modulos">
-      <SectionTitle
-        eyebrow="Dentro do pack"
-        icon={Layers}
-        title="Três módulos. Uma jornada completa."
-        sub="Da identificação da oportunidade até a entrega do serviço."
-      />
-      <div className="mt-14 grid gap-5 lg:grid-cols-3">
-        {modules.map(({ tag, icon: Icon, title, bullets }) => (
-          <article key={tag} className="relative flex flex-col rounded-2xl border border-border bg-card p-7 shadow-sm card-hover">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{tag}</span>
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg text-[color:var(--brand)]" style={{ background: "linear-gradient(135deg, oklch(0.546 0.21 263 / 0.12), oklch(0.72 0.14 230 / 0.12))" }}>
-                <Icon className="h-4.5 w-4.5" />
+    <div id="modulos" className="border-y border-[#E5E7EB] bg-[#F8FAFC]">
+      <Wrap>
+        <div className="sr mx-auto max-w-2xl text-center">
+          <Eyebrow>Dentro do Pack</Eyebrow>
+          <h2 className="mt-4" style={{ fontSize: "clamp(1.75rem,3.5vw,2.5rem)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.025em", color: "#111827" }}>
+            Tudo o que você precisa para enxergar oportunidades de mercado.
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-[#6B7280]">Cada automação documentada com o problema que resolve, como funciona e quem tem interesse em comprar.</p>
+        </div>
+        <div className="mt-12 grid gap-6 lg:grid-cols-3">
+          {mods.map(({ n, tag, title, desc, img }, i) => (
+            <article key={n} className={`sr sr-delay-${i+1} group flex flex-col overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white transition-all duration-280 hover:-translate-y-1 hover:border-[#C4B5FD] hover:shadow-[0_16px_48px_rgb(109_40_217/0.10)]`}>
+              <div className="relative overflow-hidden" style={{ height: "200px" }}>
+                <img src={img} alt={title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
+                <div className="absolute inset-0 bg-gradient-to-t from-white/40 via-transparent to-transparent" />
+                {/* Top line brand */}
+                <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-[#6D28D9] to-[#A78BFA]" />
+                <span className="absolute right-3 top-3.5 rounded-md border border-[#E5E7EB] bg-white/95 px-2.5 py-1 text-[10px] font-semibold text-[#6B7280] backdrop-blur-sm shadow-sm">
+                  {tag}
+                </span>
+              </div>
+              <div className="flex flex-1 flex-col p-6">
+                <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#6D28D9]">Módulo {n}</span>
+                <h3 className="mt-2.5 text-[1.0625rem] font-bold leading-snug text-[#111827]">{title}</h3>
+                <p className="mt-3 flex-1 text-sm leading-relaxed text-[#6B7280]">{desc}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </Wrap>
+    </div>
+  );
+}
+
+/* ── 5. TRANSFORMAÇÃO ── */
+function Transformation() {
+  return (
+    <div id="transformacao" className="bg-white">
+      <Wrap>
+        {/* Cabeçalho */}
+        <div className="sr mx-auto max-w-2xl text-center">
+          <span
+            className="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em]"
+            style={{ borderColor: "#C4B5FD", color: "#6D28D9", background: "#F5F3FF" }}
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-[#6D28D9]" />
+            Transformação
+          </span>
+          <h2
+            className="mt-5"
+            style={{ fontSize: "clamp(1.9rem,4vw,3rem)", fontWeight: 800, lineHeight: 1.05, letterSpacing: "-0.03em", color: "#111827" }}
+          >
+            Transforme aprendizado em oportunidade.
+          </h2>
+          <p className="mt-5 text-[1.0625rem] leading-relaxed text-[#6B7280]">
+            O objetivo não é aprender mais uma ferramenta. É desenvolver visão comercial. Entender o que possui demanda, identificar oportunidades e aumentar suas chances de conquistar clientes reais.
+          </p>
+        </div>
+
+        {/* Imagem principal */}
+        <div
+          className="sr mt-14 mx-auto w-full"
+          style={{
+            maxWidth: "1200px",
+            borderRadius: "24px",
+            overflow: "hidden",
+            boxShadow: "0 8px 48px rgb(0 0 0 / 0.08), 0 2px 12px rgb(109 40 217 / 0.12), 0 0 0 1px rgb(196 181 253 / 0.30)",
+          }}
+        >
+          {/* Placeholder — substituir por <img src={suaImagem} alt="..." className="w-full h-auto block" /> */}
+          <div
+            className="flex w-full flex-col items-center justify-center gap-3"
+            style={{
+              aspectRatio: "16 / 9",
+              background: "linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 60%, #DDD6FE 100%)",
+            }}
+          >
+            <div
+              className="flex h-14 w-14 items-center justify-center rounded-2xl"
+              style={{ background: "linear-gradient(135deg, #6D28D9, #A78BFA)", opacity: 0.35 }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" className="h-7 w-7">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <path d="M3 9h18M9 21V9" />
+              </svg>
+            </div>
+            <span className="text-[13px] font-medium text-[#A78BFA]">&lt;Image Placeholder&gt;</span>
+          </div>
+        </div>
+
+        {/* Indicadores */}
+        <div className="sr mt-10 flex flex-col items-center gap-5 sm:flex-row sm:justify-center sm:gap-10">
+          {[
+            "Mais clareza sobre o que vender",
+            "Mais confiança para conversar com clientes",
+            "Mais oportunidades de faturamento",
+          ].map((label: string) => (
+            <span key={label} className="flex items-center gap-2.5 text-[15px] font-medium text-[#374151]">
+              <span
+                className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"
+                style={{ background: "linear-gradient(135deg, #6D28D9, #A78BFA)" }}
+              >
+                ✓
+              </span>
+              {label}
+            </span>
+          ))}
+        </div>
+      </Wrap>
+    </div>
+  );
+}
+
+/* ── 6. O QUE VOCÊ REALMENTE RECEBE ── */
+function ContentValue() {
+  const blocks = [
+    {
+      n: "01",
+      tag: "Entenda a automação",
+      title: "Visualize o problema. Compreenda a lógica. Entenda o fluxo completo.",
+      body: "Cada automação vem com o problema que resolve, a lógica por trás do processo e o fluxo completo explicado visualmente — para que você entenda antes de apresentar para qualquer cliente.",
+      items: ["O problema que a solução resolve", "Como funciona na prática", "Fluxo completo passo a passo", "A lógica por trás do processo"],
+      img: imag1,
+      accent: "#6D28D9",
+    },
+    {
+      n: "02",
+      tag: "Potencial comercial",
+      title: "Descubra como a solução pode se transformar em uma oferta real.",
+      body: "Veja como a automação pode ser apresentada para empresas, onde existe demanda e como estruturar uma oferta concreta — sem depender de tentativa e erro.",
+      items: ["Como posicionar a solução", "Como apresentar ao cliente", "Onde existe demanda real", "Como transformar em serviço"],
+      img: imag2,
+      accent: "#7C3AED",
+    },
+    {
+      n: "03",
+      tag: "Quem compra",
+      title: "Saiba quem tem interesse e identifique oportunidades que passam despercebidas.",
+      body: "Para cada automação você encontra os nichos com maior interesse, os tipos de empresa que mais precisam dessa solução e os cenários reais de aplicação com potencial de faturamento.",
+      items: ["Nichos com maior interesse", "Tipos de empresas compradoras", "Possíveis aplicações reais", "Cenários com potencial de faturamento"],
+      img: mag3,
+      accent: "#5B21B6",
+    },
+  ];
+
+  return (
+    <div id="conteudo" className="bg-white">
+      <Wrap>
+        {/* Cabeçalho */}
+        <div className="sr mx-auto max-w-2xl text-center">
+          <Eyebrow>O que você realmente recebe</Eyebrow>
+          <h2
+            className="mt-4"
+            style={{ fontSize: "clamp(1.75rem,3.5vw,2.5rem)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.025em", color: "#111827" }}
+          >
+            Tudo o que você precisa para enxergar oportunidades de mercado.
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-[#6B7280]">
+            Você não está adquirindo apenas uma biblioteca. Está adquirindo um atalho — criado para encurtar a distância entre aprender automação e conquistar os primeiros clientes.
+          </p>
+        </div>
+
+        {/* 3 Blocos */}
+        <div className="mt-16 space-y-8">
+          {blocks.map(({ n, tag, title, body, items, img, accent }, idx) => {
+            const isEven = idx % 2 === 1;
+            return (
+              <div
+                key={n}
+                className={`sr sr-delay-${idx + 1} grid items-center gap-10 rounded-2xl border border-[#E5E7EB] bg-[#F8FAFC] p-8 md:p-10 transition-all duration-300 hover:border-[#C4B5FD] hover:shadow-[0_12px_40px_rgb(109_40_217/0.08)] lg:grid-cols-2`}
+              >
+                {/* Imagem — alterna lados */}
+                <div className={`overflow-hidden rounded-xl border border-[#E5E7EB] shadow-[0_4px_24px_rgb(0_0_0/0.07)] ${isEven ? "lg:order-2" : ""}`}>
+                  <div className="relative">
+                    {/* Linha brand no topo */}
+                    <div className="absolute inset-x-0 top-0 z-10 h-0.5" style={{ background: `linear-gradient(90deg, ${accent}, #A78BFA)` }} />
+                    <img
+                      src={img}
+                      alt={tag}
+                      className="w-full object-cover"
+                      style={{ height: "260px" }}
+                    />
+                    {/* Tag badge */}
+                    <div
+                      className="absolute left-3.5 top-4 z-10 rounded-lg px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-white"
+                      style={{ background: `linear-gradient(135deg, ${accent}, #7C3AED)`, boxShadow: "0 2px 8px rgb(109 40 217 / 0.35)" }}
+                    >
+                      {tag}
+                    </div>
+                    {/* Número */}
+                    <div className="absolute right-3.5 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-white/40 bg-black/30 backdrop-blur-sm">
+                      <span className="text-[11px] font-bold text-white">{n}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Texto */}
+                <div className={isEven ? "lg:order-1" : ""}>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: accent }}>Bloco {n}</p>
+                  <h3
+                    className="mt-3 text-xl font-bold leading-snug text-[#111827]"
+                    style={{ letterSpacing: "-0.02em" }}
+                  >
+                    {title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-relaxed text-[#6B7280]">{body}</p>
+                  <ul className="mt-5 space-y-2.5">
+                    {items.map((item) => (
+                      <li key={item} className="flex items-center gap-3">
+                        <span
+                          className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"
+                          style={{ background: `linear-gradient(135deg, ${accent}, #A78BFA)` }}
+                        >
+                          ✓
+                        </span>
+                        <span className="text-sm text-[#374151]">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Bloco de impacto */}
+        <div
+          className="sr mt-10 relative overflow-hidden rounded-2xl p-10 text-center md:p-14"
+          style={{ background: "linear-gradient(135deg, #4C1D95 0%, #6D28D9 60%, #7C3AED 100%)" }}
+        >
+          <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse 60% 80% at 80% 20%, rgb(167 139 250 / 0.18), transparent 65%)" }} />
+          <div className="pointer-events-none absolute inset-0" style={{ backgroundImage: "linear-gradient(rgb(255 255 255 / 0.04) 1px, transparent 1px), linear-gradient(to right, rgb(255 255 255 / 0.04) 1px, transparent 1px)", backgroundSize: "48px 48px" }} />
+          <div className="relative mx-auto max-w-2xl">
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#C4B5FD]">A virada de chave</p>
+            <div className="mt-6 grid gap-6 md:grid-cols-[1fr_auto_1fr]">
+              {/* Antes */}
+              <div className="rounded-xl border border-white/10 bg-white/[0.06] p-6 backdrop-blur-sm">
+                <p className="text-xs font-semibold uppercase tracking-wider text-white/40">Você deixa de pensar</p>
+                <p className="mt-3 text-lg font-semibold italic leading-snug text-white/70">
+                  "Como essa automação funciona?"
+                </p>
+              </div>
+
+              {/* Seta */}
+              <div className="flex items-center justify-center">
+                <div
+                  className="flex h-10 w-10 items-center justify-center rounded-full"
+                  style={{ background: "rgba(255,255,255,0.12)" }}
+                >
+                  <ArrowRight className="h-5 w-5 text-white" />
+                </div>
+              </div>
+
+              {/* Depois */}
+              <div className="rounded-xl border border-[#A78BFA]/40 bg-white/[0.10] p-6 backdrop-blur-sm">
+                <p className="text-xs font-semibold uppercase tracking-wider text-[#C4B5FD]">E passa a pensar</p>
+                <p className="mt-3 text-lg font-bold leading-snug text-white">
+                  "Quem precisa dessa solução e quanto pagaria?"
+                </p>
               </div>
             </div>
-            <h3 className="mt-5 text-xl font-semibold text-foreground">{title}</h3>
-            <ul className="mt-5 space-y-2.5">
-              {bullets.map((b) => (
-                <li key={b} className="flex items-start gap-2.5 text-sm text-muted-foreground">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--brand)]" /> <span className="text-foreground/90">{b}</span>
+            <p className="mt-8 text-sm leading-relaxed text-white/60">
+              Essa mudança de perspectiva é o que separa quem aprende de quem gera renda.
+            </p>
+          </div>
+        </div>
+      </Wrap>
+    </div>
+  );
+}
+
+/* ── 7. OFERTA ── */
+function Offer() {
+  return (
+    <div id="oferta" className="border-y border-[#E5E7EB] bg-[#F8FAFC]">
+      <Wrap>
+        <div className="sr mx-auto max-w-2xl text-center">
+          <Eyebrow>Oferta</Eyebrow>
+          <h2 className="mt-4" style={{ fontSize: "clamp(1.75rem,3.5vw,2.5rem)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.025em", color: "#111827" }}>
+            Você não está adquirindo uma biblioteca.<br />Está adquirindo um atalho.
+          </h2>
+          <p className="mt-4 text-base text-[#6B7280]">Um recurso criado para encurtar a distância entre aprender automação e conquistar os primeiros clientes.</p>
+        </div>
+
+        <div className="mt-12 grid gap-6 lg:grid-cols-[1.35fr_1fr]">
+          {/* Preview do material */}
+          <div className="sr rounded-2xl border border-[#E5E7EB] bg-white p-8 shadow-[0_1px_4px_rgb(0_0_0/0.04)]">
+            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9CA3AF]">O que está incluso</p>
+            <div className="grid grid-cols-3 gap-3">
+              {[imag1, imag2, mag3].map((src, i) => (
+                <div key={i} className="overflow-hidden rounded-xl border border-[#E5E7EB] shadow-sm">
+                  <img src={src} alt="" className="w-full object-cover" style={{ height: "110px" }} />
+                </div>
+              ))}
+            </div>
+            <ul className="mt-7 space-y-3">
+              {[
+                "Biblioteca premium de automações comerciais",
+                "Fluxogramas visuais simplificados",
+                "Aplicações empresariais por solução",
+                "Potenciais nichos compradores mapeados",
+                "Acesso imediato, sem aulas longas, sem excesso de teoria",
+                "Atualizações futuras incluídas",
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-3">
+                  <Check className="h-4 w-4 shrink-0 text-[#6D28D9]" />
+                  <span className="text-sm text-[#374151]">{item}</span>
                 </li>
               ))}
             </ul>
-          </article>
-        ))}
-      </div>
-    </Section>
-  );
-}
+          </div>
 
-
-/* ---------- Gallery ---------- */
-
-function Gallery() {
-  return (
-    <Section id="galeria">
-      <SectionTitle
-        eyebrow="Demonstração"
-        icon={Eye}
-        title="Espaço para imagens"
-        sub="Imagens e materiais visuais serão anexados aqui em breve."
-      />
-      <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-            <div className="aspect-[4/3] bg-[color:var(--surface)] p-5 flex items-center justify-center">
-              <div className="text-center">
-                <div className="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-[color:var(--brand)]/10 text-[color:var(--brand)]">
-                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+          {/* Pricing */}
+          <div
+            className="sr sr-delay-1 relative flex flex-col overflow-hidden rounded-2xl border-2 border-[#6D28D9] bg-white p-8"
+            style={{ boxShadow: "0 4px 24px rgb(109 40 217 / 0.14)" }}
+          >
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-[#6D28D9] to-[#A78BFA]" />
+            <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full blur-3xl" style={{ background: "rgb(109 40 217 / 0.08)" }} />
+            <div className="relative">
+              <span
+                className="inline-block rounded-lg px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-white"
+                style={{ background: "linear-gradient(135deg, #6D28D9, #7C3AED)" }}
+              >
+                Acesso completo
+              </span>
+              <div className="mt-6">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-[3.25rem] font-extrabold leading-none tracking-tight text-[#111827]">R$&nbsp;27</span>
+                  <span className="text-2xl font-bold text-[#9CA3AF]">,90</span>
                 </div>
-                <p className="mt-2 text-xs text-muted-foreground">Imagem {i}</p>
+                <div className="mt-2 flex items-center gap-2.5">
+                  <span className="text-sm text-[#C0C0C0] line-through">R$ 97,00</span>
+                  <span className="rounded-full bg-[#F0FDF4] px-2.5 py-0.5 text-xs font-bold text-green-600">72% de desconto</span>
+                </div>
+              </div>
+              <p className="mt-2 text-xs text-[#9CA3AF]">Pagamento único · Acesso imediato · Vitalício</p>
+              <div className="mt-7"><Btn lg>{CTA_LABEL}</Btn></div>
+              <div className="mt-6 flex items-start gap-3 rounded-xl border border-[#E5E7EB] bg-[#F8FAFC] p-4">
+                <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#6D28D9]" />
+                <div>
+                  <p className="text-sm font-semibold text-[#111827]">Garantia incondicional de 7 dias</p>
+                  <p className="mt-0.5 text-xs text-[#6B7280]">Acesse, consulte e, se não enxergar valor real, devolvemos tudo. Sem perguntas.</p>
+                </div>
               </div>
             </div>
-            <div className="border-t border-border px-5 py-3.5">
-              <span className="text-sm font-semibold text-foreground">Espaço para imagem {i}</span>
-            </div>
           </div>
-        ))}
-      </div>
-    </Section>
+        </div>
+      </Wrap>
+    </div>
   );
 }
 
-
-/* ---------- Transformation (before/after) ---------- */
-
-function Transformation() {
-  const before = [
-    "Aprende sem direção comercial",
-    "Não sabe o que vender",
-    "Não entende demanda",
-    "Insegurança ao precificar",
-  ];
-  const after = [
-    "Visão comercial clara",
-    "Sabe exatamente o que entregar",
-    "Identifica oportunidades reais",
-    "Confiança para fechar projetos",
-  ];
-  return (
-    <Section id="transformacao">
-      <SectionTitle
-        eyebrow="Transformação"
-        icon={Sparkles}
-        title="O que muda depois do Nexus Automation Pack"
-      />
-      <div className="mt-14 grid gap-5 md:grid-cols-2">
-        <div className="rounded-2xl border border-border bg-[color:var(--surface)] p-7">
-          <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Antes</div>
-          <ul className="mt-4 space-y-3">
-            {before.map((b) => (
-              <li key={b} className="flex items-start gap-3 text-sm text-foreground/80">
-                <X className="mt-0.5 h-4 w-4 shrink-0 text-destructive" /> {b}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="relative overflow-hidden rounded-2xl border border-[color:var(--brand)]/20 bg-card p-7 shadow-md">
-          <div className="pointer-events-none absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-[color:var(--brand)] to-transparent" />
-          <div className="text-xs font-semibold uppercase tracking-wider text-[color:var(--brand)]">Depois</div>
-          <ul className="mt-4 space-y-3">
-            {after.map((a) => (
-              <li key={a} className="flex items-start gap-3 text-sm text-foreground">
-                <Check className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--brand)]" /> {a}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </Section>
-  );
-}
-
-/* ---------- Benefits ---------- */
-
-function Benefits() {
-  const benefits = [
-    { icon: Target, title: "Descubra automações vendáveis", desc: "Pare de chutar — saiba o que o mercado já paga." },
-    { icon: TrendingUp, title: "Entenda oportunidades", desc: "Demanda real por nicho e por porte de empresa." },
-    { icon: Workflow, title: "Aprenda lógica de workflows", desc: "Pense em entradas, decisões e saídas." },
-    { icon: Award, title: "Confiança comercial", desc: "Apresente soluções com clareza de quem entende." },
-    { icon: Compass, title: "Visão estratégica", desc: "Saia da execução pura e ganhe perspectiva." },
-    { icon: Clock, title: "Economize meses", desc: "Atalho para evitar tentativa e erro infinitos." },
-  ];
-  return (
-    <Section id="beneficios">
-      <SectionTitle eyebrow="Benefícios" icon={Sparkles} title="Por que o pack acelera quem está começando" />
-      <div className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {benefits.map(({ icon: Icon, title, desc }) => (
-          <div key={title} className="group rounded-2xl border border-border bg-card p-6 shadow-xs card-hover">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[color:var(--surface)] text-[color:var(--brand)] ring-soft transition-transform group-hover:scale-110">
-              <Icon className="h-5 w-5" />
-            </div>
-            <h3 className="mt-5 text-base font-semibold text-foreground">{title}</h3>
-            <p className="mt-1.5 text-sm text-muted-foreground">{desc}</p>
-          </div>
-        ))}
-      </div>
-    </Section>
-  );
-}
-
-/* ---------- Offer ---------- */
-
-function Offer() {
-  const includes = [
-    "Biblioteca Premium com +50 automações",
-    "Guias visuais por automação",
-    "Fluxogramas detalhados",
-    "Estudos de aplicação comercial",
-    "Atualizações futuras incluídas",
-    "Acesso vitalício ao material",
-  ];
-  return (
-    <Section id="oferta">
-      <SectionTitle eyebrow="Oferta" icon={Boxes} title="Tudo que você recebe" sub="Acesso imediato a uma biblioteca pensada para gerar resultado comercial." />
-      <div className="mt-14 grid gap-6 lg:grid-cols-[1.1fr_1fr]">
-        <div className="rounded-2xl border border-border bg-card p-7 shadow-sm">
-          <ul className="grid gap-3 sm:grid-cols-2">
-            {includes.map((it) => (
-              <li key={it} className="flex items-start gap-3 rounded-xl border border-border bg-[color:var(--surface)] p-4">
-                <div className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--brand)]/10 text-[color:var(--brand)]">
-                  <Check className="h-3.5 w-3.5" />
-                </div>
-                <span className="text-sm font-medium text-foreground">{it}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="relative overflow-hidden rounded-2xl border border-[color:var(--brand)]/25 bg-card p-8 shadow-lg">
-          <div className="pointer-events-none absolute -right-16 -top-16 h-60 w-60 rounded-full" style={{ background: "radial-gradient(circle, oklch(0.546 0.21 263 / 0.15), transparent 70%)" }} />
-          <span className="silver-chip inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider">Acesso completo</span>
-          <h3 className="mt-5 text-2xl font-bold tracking-tight text-foreground">Nexus Automation Pack</h3>
-          <p className="mt-2 text-sm text-muted-foreground">Pagamento único · Acesso imediato</p>
-          <div className="mt-6 flex items-end gap-3">
-            <span className="text-5xl font-bold tracking-tight text-foreground">R$ 27<span className="text-2xl text-muted-foreground">,90</span></span>
-            <span className="mb-1 text-sm text-muted-foreground line-through">R$ 97</span>
-          </div>
-          <div className="mt-6">
-            <PrimaryButton>{CTA_PRIMARY}</PrimaryButton>
-          </div>
-          <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
-            <span className="inline-flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5 text-[color:var(--brand)]" /> 7 dias de garantia</span>
-            <span className="inline-flex items-center gap-1.5"><Zap className="h-3.5 w-3.5 text-[color:var(--brand)]" /> Acesso vitalício</span>
-            <span className="inline-flex items-center gap-1.5"><Layers className="h-3.5 w-3.5 text-[color:var(--brand)]" /> Atualizações grátis</span>
-          </div>
-        </div>
-      </div>
-    </Section>
-  );
-}
-
-/* ---------- Guarantee ---------- */
-
-function Guarantee() {
-  return (
-    <Section id="garantia">
-      <div className="relative mx-auto max-w-3xl overflow-hidden rounded-3xl border border-border bg-card p-10 text-center shadow-sm">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl text-[color:var(--brand)]" style={{ background: "linear-gradient(135deg, oklch(0.546 0.21 263 / 0.12), oklch(0.72 0.14 230 / 0.12))" }}>
-          <ShieldCheck className="h-7 w-7" />
-        </div>
-        <h3 className="mt-6 text-2xl font-bold tracking-tight text-foreground md:text-3xl">Garantia incondicional de 7 dias</h3>
-        <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground md:text-base">
-          Se o material não agregar valor real ao seu caminho, é só pedir reembolso. Sem perguntas, sem fricção.
-        </p>
-      </div>
-    </Section>
-  );
-}
-
-/* ---------- FAQ ---------- */
-
+/* ── 7. FAQ ── */
 function FAQ() {
   const faqs = [
-    { q: "Sou iniciante, esse material serve para mim?", a: "Sim. O pack é pensado para quem está começando e quer enxergar o cenário comercial antes de mergulhar em ferramentas." },
-    { q: "Preciso saber programar?", a: "Não. Os fluxogramas são visuais e usam ferramentas no-code/low-code populares como n8n, Make e Zapier." },
-    { q: "Funciona para freelancers?", a: "Sim — foi desenhado especialmente para quem quer transformar conhecimento técnico em projetos vendáveis." },
-    { q: "É só teoria?", a: "Não. Cada automação inclui caso de aplicação, arquitetura visual e direção comercial de venda." },
-    { q: "Como recebo o acesso?", a: "O acesso é imediato após a compra, enviado por e-mail e disponível em uma área online." },
-    { q: "Existem atualizações?", a: "Sim. Novas automações e revisões são adicionadas e você recebe sem custo adicional." },
+    { q: "Para quem é o Nexus Automation Pack?", a: "Para quem já está aprendendo automação e quer transformar esse conhecimento em oportunidades reais de faturamento. Funciona tanto para quem está começando quanto para quem já domina ferramentas mas ainda não conseguiu clientes." },
+    { q: "Preciso saber programar?", a: "Não. O material é visual, direto e focado em visão comercial. O objetivo não é ensinar código — é mostrar o que o mercado compra e como identificar oportunidades." },
+    { q: "Isso é um curso?", a: "Não. É uma biblioteca de consulta rápida. Sem aulas longas, sem excesso de teoria. Você acessa, enxerga a oportunidade e parte para a ação." },
+    { q: "Como recebo o acesso?", a: "Imediatamente após a compra, por e-mail, com link direto para o material. Sem espera." },
+    { q: "E se eu não enxergar valor?", a: "Garantia incondicional de 7 dias. Reembolso total, sem burocracia e sem perguntas." },
   ];
-  const [open, setOpen] = useState<number | null>(0);
+  const [open, setOpen] = useState<number | null>(null);
   return (
-    <Section id="faq">
-      <SectionTitle eyebrow="Perguntas frequentes" icon={Eye} title="Tudo que você precisa saber" />
-      <div className="mx-auto mt-12 max-w-3xl divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-        {faqs.map((item, i) => {
-          const isOpen = open === i;
-          return (
-            <button
-              key={item.q}
-              onClick={() => setOpen(isOpen ? null : i)}
-              className="block w-full text-left"
-              aria-expanded={isOpen}
-            >
-              <div className="flex items-center justify-between gap-4 px-6 py-5 transition-colors hover:bg-[color:var(--surface)]">
-                <span className="text-[15px] font-semibold text-foreground">{item.q}</span>
-                <ChevronDown className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
-              </div>
-              <div
-                className="grid overflow-hidden px-6 transition-all duration-300"
-                style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
-              >
-                <div className="min-h-0">
-                  <p className="pb-5 text-sm leading-relaxed text-muted-foreground">{item.a}</p>
+    <div id="faq" className="bg-white">
+      <Wrap>
+        <div className="sr mx-auto max-w-2xl text-center">
+          <Eyebrow>Perguntas frequentes</Eyebrow>
+          <h2 className="mt-4" style={{ fontSize: "clamp(1.75rem,3.5vw,2.5rem)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.025em", color: "#111827" }}>
+            Tire suas dúvidas antes de decidir.
+          </h2>
+        </div>
+        <div className="mx-auto mt-10 max-w-2xl overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white shadow-[0_1px_4px_rgb(0_0_0/0.04)]">
+          {faqs.map((item, i) => {
+            const isOpen = open === i;
+            return (
+              <div key={item.q} className={i > 0 ? "border-t border-[#F3F4F6]" : ""}>
+                <button
+                  onClick={() => setOpen(isOpen ? null : i)}
+                  className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition-colors hover:bg-[#F8FAFC]"
+                  aria-expanded={isOpen}
+                >
+                  <span className="text-sm font-semibold text-[#111827]">{item.q}</span>
+                  <ChevronDown className={`h-4 w-4 shrink-0 text-[#9CA3AF] transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+                </button>
+                <div className="grid overflow-hidden transition-all duration-300" style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}>
+                  <div className="min-h-0">
+                    <p className="px-6 pb-5 text-sm leading-relaxed text-[#6B7280]">{item.a}</p>
+                  </div>
                 </div>
               </div>
-            </button>
-          );
-        })}
-      </div>
-    </Section>
+            );
+          })}
+        </div>
+      </Wrap>
+    </div>
   );
 }
 
-/* ---------- Final CTA ---------- */
-
+/* ── 8. CTA FINAL ── */
 function FinalCTA() {
   return (
-    <Section id="final" className="!pb-32">
-      <div className="relative overflow-hidden rounded-3xl border border-border bg-card p-10 text-center text-foreground md:p-16">
-        <div className="pointer-events-none absolute inset-0 opacity-50" style={{ background: "radial-gradient(ellipse 60% 50% at 50% 0%, oklch(0.546 0.21 263 / 0.6), transparent 60%)" }} />
-        <div className="pointer-events-none absolute inset-0 bg-grid opacity-[0.07]" />
-        <div className="relative mx-auto max-w-3xl">
-          <Eyebrow icon={Rocket}>Última chamada</Eyebrow>
-          <h2 className="mt-5 text-balance text-3xl font-bold tracking-tight md:text-5xl">
-            Pare de aprender automação sem direção.<br />
-            <span className="text-brand-gradient">Comece a construir soluções que empresas compram.</span>
+    <div className="relative overflow-hidden" style={{ background: "linear-gradient(135deg, #4C1D95 0%, #6D28D9 50%, #7C3AED 100%)" }}>
+      <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse 60% 70% at 80% 50%, rgb(167 139 250 / 0.15), transparent 70%)" }} />
+      <div className="pointer-events-none absolute inset-0" style={{ backgroundImage: "linear-gradient(rgb(255 255 255 / 0.04) 1px, transparent 1px), linear-gradient(to right, rgb(255 255 255 / 0.04) 1px, transparent 1px)", backgroundSize: "64px 64px" }} />
+      <Wrap className="!py-24 md:!py-32 text-center relative">
+        <div className="sr mx-auto max-w-2xl">
+          <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#C4B5FD]">
+            <span className="h-px w-5 bg-[#A78BFA] rounded-full" />
+            Última chamada
+          </span>
+          <h2 className="sr sr-delay-1 mt-5 text-balance text-3xl font-bold tracking-tight text-white md:text-[2.5rem] leading-[1.1]" style={{ letterSpacing: "-0.025em" }}>
+            Se você deseja parar de apenas aprender automação{" "}
+            <span className="text-[#C4B5FD]">e começar a enxergar oportunidades reais de mercado,</span>{" "}
+            o Nexus Automation Pack foi criado para você.
           </h2>
-          <p className="mx-auto mt-5 max-w-xl text-foreground/70">
-            Acesso imediato. Garantia de 7 dias. Atualizações incluídas.
+          <p className="sr sr-delay-2 mx-auto mt-5 max-w-md text-base text-white/60">
+            Acesso imediato. Consulta rápida. Sem aulas longas. Garantia de 7 dias.
           </p>
-          <div className="mt-8 flex justify-center">
-            <PrimaryButton>Quero acessar o Nexus Automation Pack</PrimaryButton>
+          <div className="sr sr-delay-3 mt-9 flex justify-center">
+            <a
+              href={CTA_URL}
+              className="group inline-flex items-center justify-center gap-2.5 rounded-xl bg-white px-8 py-4 text-base font-bold text-[#6D28D9] transition-all duration-200 hover:-translate-y-px"
+              style={{ boxShadow: "0 4px 20px rgb(0 0 0 / 0.25), inset 0 1px 0 rgb(255 255 255 / 1)" }}
+            >
+              Quero acessar agora
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </a>
           </div>
         </div>
-      </div>
-    </Section>
+      </Wrap>
+    </div>
   );
 }
 
-/* ---------- Footer ---------- */
-
+/* ── FOOTER ── */
 function Footer() {
   return (
-    <footer className="border-t border-border bg-[color:var(--surface)]">
-      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 md:flex-row">
-        <div className="flex items-center gap-2.5">
-          <img src={logoAsset.url} alt="Nexus" className="h-6 w-6" />
-          <span className="text-sm font-semibold text-foreground">Nexus Automation Pack</span>
+    <footer className="border-t border-[#E5E7EB] bg-white">
+      <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-3 px-6 py-8 md:flex-row">
+        <div className="flex items-center gap-2">
+          <img src={logoAsset.url} alt="Nexus" className="h-5 w-5 opacity-70" />
+          <span className="text-xs font-medium text-[#9CA3AF]">Nexus Automation Pack</span>
         </div>
-        <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} Nexus. Todos os direitos reservados.</p>
+        <span className="text-xs text-[#D1D5DB]">© {new Date().getFullYear()} Nexus. Todos os direitos reservados.</span>
       </div>
     </footer>
   );
 }
 
-/* ---------- Page ---------- */
-
+/* ── PAGE ── */
 function Landing() {
+  useScrollReveal();
   return (
-    <main className="min-h-screen bg-background text-foreground">
-      <Nav />
+    <main className="min-h-screen bg-white text-[#111827]">
+      <AnnouncementBar />
       <Hero />
-      <LogosStrip />
       <Problem />
-      <RealPain />
-      <Solution />
       <Mechanism />
       <Modules />
-      <Gallery />
       <Transformation />
-      <Benefits />
+      <ContentValue />
       <Offer />
-      <Guarantee />
       <FAQ />
       <FinalCTA />
       <Footer />
