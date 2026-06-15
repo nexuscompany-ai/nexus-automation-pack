@@ -3,6 +3,8 @@ import logoAsset from "@/assets/logo_nexus.png.asset.json";
 import imag1 from "@/assets/imag1.png";
 import imag2 from "@/assets/imag2.png";
 import mag3 from "@/assets/mag3.png";
+import antexdepois from "@/assets/antexdepois.png";
+import eu from "@/assets/eu.png";
 import { ArrowRight, Check, ChevronDown, ShieldCheck } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -542,8 +544,9 @@ function Modules() {
 function Transformation() {
   return (
     <div id="transformacao" className="bg-white">
+
+      {/* ── BLOCO 1: antexdepois ── */}
       <Wrap>
-        {/* Cabeçalho */}
         <div className="sr mx-auto max-w-2xl text-center">
           <span
             className="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em]"
@@ -556,49 +559,81 @@ function Transformation() {
             className="mt-5"
             style={{ fontSize: "clamp(1.9rem,4vw,3rem)", fontWeight: 800, lineHeight: 1.05, letterSpacing: "-0.03em", color: "#111827" }}
           >
-            Transforme aprendizado em oportunidade.
+            Pare de estudar sem direção.
           </h2>
           <p className="mt-5 text-[1.0625rem] leading-relaxed text-[#6B7280]">
-            O objetivo não é aprender mais uma ferramenta. É desenvolver visão comercial. Entender o que possui demanda, identificar oportunidades e aumentar suas chances de conquistar clientes reais.
+            A maioria aprende ferramentas.<br className="hidden sm:block" />
+            Poucos descobrem quais soluções empresas realmente compram.
           </p>
         </div>
 
-        {/* Imagem principal */}
+        <div
+          className="sr mt-14 mx-auto w-full"
+          style={{
+            maxWidth: "1200px",
+            borderRadius: "20px",
+            overflow: "hidden",
+            boxShadow: "0 8px 40px rgb(0 0 0 / 0.08), 0 2px 8px rgb(109 40 217 / 0.10), 0 0 0 1px rgb(196 181 253 / 0.25)",
+          }}
+        >
+          <img src={antexdepois} alt="Antes e depois — do aprendizado à oportunidade" className="w-full h-auto block" />
+        </div>
+      </Wrap>
+
+      {/* ── TRANSIÇÃO ── */}
+      <div className="sr mx-auto max-w-2xl px-6 pb-10 pt-2 text-center">
+        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#6D28D9]">Visão comercial</p>
+        <h3
+          className="mt-4"
+          style={{ fontSize: "clamp(1.5rem,3vw,2.25rem)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.025em", color: "#111827" }}
+        >
+          Quando você entende o que vender, tudo muda.
+        </h3>
+        <p className="mt-4 text-[1.0625rem] leading-relaxed text-[#6B7280]">
+          O mercado não recompensa quem conhece mais ferramentas.<br className="hidden sm:block" />
+          O mercado recompensa quem resolve problemas e entrega resultados.
+        </p>
+      </div>
+
+      {/* ── BLOCO 2: eu ── */}
+      <Wrap className="!pt-0">
+        <div className="sr mx-auto max-w-2xl text-center">
+          <span
+            className="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em]"
+            style={{ borderColor: "#C4B5FD", color: "#6D28D9", background: "#F5F3FF" }}
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-[#6D28D9]" />
+            O resultado
+          </span>
+          <h2
+            className="mt-5"
+            style={{ fontSize: "clamp(1.9rem,4vw,3rem)", fontWeight: 800, lineHeight: 1.05, letterSpacing: "-0.03em", color: "#111827" }}
+          >
+            Imagine ser você.
+          </h2>
+          <p className="mt-5 text-[1.0625rem] leading-relaxed text-[#6B7280]">
+            Identificando oportunidades. Conversando com empresas.<br className="hidden sm:block" />
+            Fechando projetos. Transformando conhecimento em renda.
+          </p>
+        </div>
+
         <div
           className="sr mt-14 mx-auto w-full"
           style={{
             maxWidth: "1200px",
             borderRadius: "24px",
             overflow: "hidden",
-            boxShadow: "0 8px 48px rgb(0 0 0 / 0.08), 0 2px 12px rgb(109 40 217 / 0.12), 0 0 0 1px rgb(196 181 253 / 0.30)",
+            boxShadow: "0 8px 48px rgb(0 0 0 / 0.07), 0 2px 16px rgb(109 40 217 / 0.08), 0 0 0 1px rgb(196 181 253 / 0.20)",
           }}
         >
-          {/* Placeholder — substituir por <img src={suaImagem} alt="..." className="w-full h-auto block" /> */}
-          <div
-            className="flex w-full flex-col items-center justify-center gap-3"
-            style={{
-              aspectRatio: "16 / 9",
-              background: "linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 60%, #DDD6FE 100%)",
-            }}
-          >
-            <div
-              className="flex h-14 w-14 items-center justify-center rounded-2xl"
-              style={{ background: "linear-gradient(135deg, #6D28D9, #A78BFA)", opacity: 0.35 }}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" className="h-7 w-7">
-                <rect x="3" y="3" width="18" height="18" rx="2" />
-                <path d="M3 9h18M9 21V9" />
-              </svg>
-            </div>
-            <span className="text-[13px] font-medium text-[#A78BFA]">&lt;Image Placeholder&gt;</span>
-          </div>
+          <img src={eu} alt="Profissional identificando oportunidades de automação" className="w-full h-auto block" />
         </div>
 
         {/* Indicadores */}
-        <div className="sr mt-10 flex flex-col items-center gap-5 sm:flex-row sm:justify-center sm:gap-10">
+        <div className="sr mt-12 flex flex-col items-center gap-5 sm:flex-row sm:justify-center sm:gap-12">
           {[
             "Mais clareza sobre o que vender",
-            "Mais confiança para conversar com clientes",
+            "Mais confiança para apresentar soluções",
             "Mais oportunidades de faturamento",
           ].map((label: string) => (
             <span key={label} className="flex items-center gap-2.5 text-[15px] font-medium text-[#374151]">
