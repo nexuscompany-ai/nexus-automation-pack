@@ -3,6 +3,7 @@ import logoAsset from "@/assets/logo_nexus.png.asset.json";
 import imag1 from "@/assets/imag1.png";
 import imag2 from "@/assets/imag2.png";
 import mag3 from "@/assets/mag3.png";
+import modulo3 from "@/assets/modulo3.png";
 import antexdepois from "@/assets/antexdepois.png";
 import eu from "@/assets/eu.png";
 import { ArrowRight, Check, ChevronDown, ShieldCheck } from "lucide-react";
@@ -503,9 +504,9 @@ function Mechanism() {
 /* ── 4. MÓDULOS ── */
 function Modules() {
   const mods = [
-    { n: "01", tag: "Visão comercial", title: "Entenda a automação", desc: "Visualize o problema que cada solução resolve. Compreenda a lógica por trás do processo. Entenda o fluxo completo — antes de apresentar para qualquer cliente.", img: imag1 },
-    { n: "02", tag: "Potencial de mercado", title: "Descubra o potencial comercial", desc: "Veja como a solução pode ser apresentada para empresas. Entenda onde existe demanda real e como transformar conhecimento em uma oferta concreta.", img: imag2 },
-    { n: "03", tag: "Oportunidades reais", title: "Saiba quem compra", desc: "Descubra quais nichos têm interesse naquilo que você sabe fazer. Identifique oportunidades que normalmente passam despercebidas.", img: mag3 },
+    { n: "01", tag: "Visão comercial",     title: "Entenda a automação",           desc: "Visualize o problema que cada solução resolve. Compreenda a lógica por trás do processo. Entenda o fluxo completo — antes de apresentar para qualquer cliente.", img: imag1 },
+    { n: "02", tag: "Potencial de mercado", title: "Descubra o potencial comercial",  desc: "Veja como a solução pode ser apresentada para empresas. Entenda onde existe demanda real e como transformar conhecimento em uma oferta concreta.",             img: imag2 },
+    { n: "03", tag: "Oportunidades reais",  title: "Saiba quem compra",              desc: "Descubra quais nichos têm interesse naquilo que você sabe fazer. Identifique oportunidades que normalmente passam despercebidas.",                          img: modulo3 },
   ];
   return (
     <div id="modulos" className="border-y border-[#E5E7EB] bg-[#F8FAFC]">
@@ -520,11 +521,14 @@ function Modules() {
         <div className="mt-12 grid gap-6 lg:grid-cols-3">
           {mods.map(({ n, tag, title, desc, img }, i) => (
             <article key={n} className={`sr sr-delay-${i+1} group flex flex-col overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white transition-all duration-280 hover:-translate-y-1 hover:border-[#C4B5FD] hover:shadow-[0_16px_48px_rgb(109_40_217/0.10)]`}>
-              <div className="relative overflow-hidden" style={{ height: "200px" }}>
-                <img src={img} alt={title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
-                <div className="absolute inset-0 bg-gradient-to-t from-white/40 via-transparent to-transparent" />
-                {/* Top line brand */}
+              <div className="relative w-full bg-[#F8FAFC]">
                 <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-[#6D28D9] to-[#A78BFA]" />
+                <img
+                  src={img}
+                  alt={title}
+                  className="w-full h-auto block"
+                  style={{ objectFit: "contain" }}
+                />
                 <span className="absolute right-3 top-3.5 rounded-md border border-[#E5E7EB] bg-white/95 px-2.5 py-1 text-[10px] font-semibold text-[#6B7280] backdrop-blur-sm shadow-sm">
                   {tag}
                 </span>
@@ -679,7 +683,7 @@ function ContentValue() {
       title: "Saiba quem tem interesse e identifique oportunidades que passam despercebidas.",
       body: "Para cada automação você encontra os nichos com maior interesse, os tipos de empresa que mais precisam dessa solução e os cenários reais de aplicação com potencial de faturamento.",
       items: ["Nichos com maior interesse", "Tipos de empresas compradoras", "Possíveis aplicações reais", "Cenários com potencial de faturamento"],
-      img: mag3,
+      img: modulo3,
       accent: "#5B21B6",
     },
   ];
@@ -710,28 +714,16 @@ function ContentValue() {
                 key={n}
                 className={`sr sr-delay-${idx + 1} grid items-center gap-10 rounded-2xl border border-[#E5E7EB] bg-[#F8FAFC] p-8 md:p-10 transition-all duration-300 hover:border-[#C4B5FD] hover:shadow-[0_12px_40px_rgb(109_40_217/0.08)] lg:grid-cols-2`}
               >
-                {/* Imagem — alterna lados */}
-                <div className={`overflow-hidden rounded-xl border border-[#E5E7EB] shadow-[0_4px_24px_rgb(0_0_0/0.07)] ${isEven ? "lg:order-2" : ""}`}>
+                {/* Imagem — 100% visível, sem cortes */}
+                <div className={`w-full rounded-xl border border-[#E5E7EB] bg-[#F8FAFC] overflow-hidden shadow-[0_4px_24px_rgb(0_0_0/0.07)] ${isEven ? "lg:order-2" : ""}`}>
                   <div className="relative">
-                    {/* Linha brand no topo */}
                     <div className="absolute inset-x-0 top-0 z-10 h-0.5" style={{ background: `linear-gradient(90deg, ${accent}, #A78BFA)` }} />
                     <img
                       src={img}
                       alt={tag}
-                      className="w-full object-cover"
-                      style={{ height: "260px" }}
+                      className="w-full h-auto block"
+                      style={{ objectFit: "contain" }}
                     />
-                    {/* Tag badge */}
-                    <div
-                      className="absolute left-3.5 top-4 z-10 rounded-lg px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-white"
-                      style={{ background: `linear-gradient(135deg, ${accent}, #7C3AED)`, boxShadow: "0 2px 8px rgb(109 40 217 / 0.35)" }}
-                    >
-                      {tag}
-                    </div>
-                    {/* Número */}
-                    <div className="absolute right-3.5 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-white/40 bg-black/30 backdrop-blur-sm">
-                      <span className="text-[11px] font-bold text-white">{n}</span>
-                    </div>
                   </div>
                 </div>
 
