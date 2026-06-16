@@ -733,6 +733,143 @@ function Authority() {
   );
 }
 
+/* ── 6. O QUE VOCÊ REALMENTE RECEBE ── */
+function ContentValue() {
+  const blocks = [
+    {
+      n: "01",
+      tag: "Entenda a automação",
+      title: "Visualize o problema. Compreenda a lógica. Entenda o fluxo completo.",
+      body: "Cada automação vem com o problema que resolve, a lógica por trás do processo e o fluxo completo explicado visualmente — para que você entenda antes de apresentar para qualquer cliente.",
+      items: ["O problema que a solução resolve", "Como funciona na prática", "Fluxo completo passo a passo", "A lógica por trás do processo"],
+      img: modulo1,
+      accent: "#6D28D9",
+    },
+    {
+      n: "02",
+      tag: "Potencial comercial",
+      title: "Descubra como a solução pode se transformar em uma oferta real.",
+      body: "Veja como a automação pode ser apresentada para empresas, onde existe demanda e como estruturar uma oferta concreta — sem depender de tentativa e erro.",
+      items: ["Como posicionar a solução", "Como apresentar ao cliente", "Onde existe demanda real", "Como transformar em serviço"],
+      img: modulo2,
+      accent: "#7C3AED",
+    },
+    {
+      n: "03",
+      tag: "Quem compra",
+      title: "Saiba quem tem interesse e identifique oportunidades que passam despercebidas.",
+      body: "Para cada automação você encontra os nichos com maior interesse, os tipos de empresa que mais precisam dessa solução e os cenários reais de aplicação com potencial de faturamento.",
+      items: ["Nichos com maior interesse", "Tipos de empresas compradoras", "Possíveis aplicações reais", "Cenários com potencial de faturamento"],
+      img: modulo3,
+      accent: "#5B21B6",
+    },
+  ];
+
+  return (
+    <div id="conteudo" className="bg-white">
+      <Wrap>
+        {/* Cabeçalho */}
+        <div className="sr mx-auto max-w-2xl text-center">
+          <Eyebrow>O que você realmente recebe</Eyebrow>
+          <h2
+            className="mt-4"
+            style={{ fontSize: "clamp(1.75rem,3.5vw,2.5rem)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.025em", color: "#111827" }}
+          >
+            Tudo o que você precisa para enxergar oportunidades de mercado.
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-[#6B7280]">
+            Você não está adquirindo apenas uma biblioteca. Está adquirindo um atalho — criado para encurtar a distância entre aprender automação e conquistar os primeiros clientes.
+          </p>
+        </div>
+
+        {/* 3 Blocos */}
+        <div className="mt-16 space-y-8">
+          {blocks.map(({ n, tag, title, body, items, img, accent }, idx) => {
+            const isEven = idx % 2 === 1;
+            return (
+              <div
+                key={n}
+                className={`sr sr-delay-${idx + 1} grid items-center gap-10 rounded-2xl border border-[#E5E7EB] bg-[#F8FAFC] p-8 md:p-10 transition-all duration-300 hover:border-[#C4B5FD] hover:shadow-[0_12px_40px_rgb(109_40_217/0.08)] lg:grid-cols-2`}
+              >
+                <div className={`w-full rounded-xl border border-[#E5E7EB] bg-[#F8FAFC] overflow-hidden shadow-[0_4px_24px_rgb(0_0_0/0.07)] ${isEven ? "lg:order-2" : ""}`}>
+                  <div className="relative">
+                    <div className="absolute inset-x-0 top-0 z-10 h-0.5" style={{ background: `linear-gradient(90deg, ${accent}, #A78BFA)` }} />
+                    <img
+                      src={img}
+                      alt={tag}
+                      className="w-full h-auto block"
+                      style={{ objectFit: "contain" }}
+                    />
+                  </div>
+                </div>
+
+                <div className={isEven ? "lg:order-1" : ""}>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: accent }}>Bloco {n}</p>
+                  <h3
+                    className="mt-3 text-xl font-bold leading-snug text-[#111827]"
+                    style={{ letterSpacing: "-0.02em" }}
+                  >
+                    {title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-relaxed text-[#6B7280]">{body}</p>
+                  <ul className="mt-5 space-y-2.5">
+                    {items.map((item) => (
+                      <li key={item} className="flex items-center gap-3">
+                        <span
+                          className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"
+                          style={{ background: `linear-gradient(135deg, ${accent}, #A78BFA)` }}
+                        >
+                          ✓
+                        </span>
+                        <span className="text-sm text-[#374151]">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Bloco de impacto */}
+        <div
+          className="sr mt-10 relative overflow-hidden rounded-2xl p-10 text-center md:p-14"
+          style={{ background: "linear-gradient(135deg, #4C1D95 0%, #6D28D9 60%, #7C3AED 100%)" }}
+        >
+          <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse 60% 80% at 80% 20%, rgb(167 139 250 / 0.18), transparent 65%)" }} />
+          <div className="pointer-events-none absolute inset-0" style={{ backgroundImage: "linear-gradient(rgb(255 255 255 / 0.04) 1px, transparent 1px), linear-gradient(to right, rgb(255 255 255 / 0.04) 1px, transparent 1px)", backgroundSize: "48px 48px" }} />
+          <div className="relative mx-auto max-w-2xl">
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#C4B5FD]">A virada de chave</p>
+            <div className="mt-6 grid gap-6 md:grid-cols-[1fr_auto_1fr]">
+              <div className="rounded-xl border border-white/10 bg-white/[0.06] p-6 backdrop-blur-sm">
+                <p className="text-xs font-semibold uppercase tracking-wider text-white/40">Você deixa de pensar</p>
+                <p className="mt-3 text-lg font-semibold italic leading-snug text-white/70">
+                  "Como essa automação funciona?"
+                </p>
+              </div>
+
+              <div className="flex items-center justify-center">
+                <div
+                  className="flex h-10 w-10 items-center justify-center rounded-full"
+                  style={{ background: "rgba(255,255,255,0.12)" }}
+                >
+                  <ArrowRight className="h-5 w-5 text-white" />
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-[#A78BFA]/40 bg-white/[0.10] p-6 backdrop-blur-sm">
+                <p className="text-xs font-semibold uppercase tracking-wider text-[#C4B5FD]">E passa a pensar</p>
+                <p className="mt-3 text-lg font-bold leading-snug text-white">
+                  "Quem precisa dessa solução e quanto pagaria?"
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Wrap>
+    </div>
+  );
+}
 
 /* ── PAGE ── */
 function Landing() {
