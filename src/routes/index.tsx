@@ -8,7 +8,7 @@ import modulo2 from "@/assets/modulo2.png";
 import modulo1 from "@/assets/modulo1.png";
 import antexdepois from "@/assets/antexdepois.png";
 import eu from "@/assets/eu.png";
-import { ArrowRight, Check, ChevronDown, ShieldCheck } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, ShieldCheck, MessageCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export const Route = createFileRoute("/")({
@@ -191,12 +191,6 @@ function ProductMockup() {
       >
         <img src={imag1} alt="Nexus Automation Pack" className="w-full object-cover" style={{ height: "300px" }} />
         <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white/70 to-transparent" />
-
-        {/* Badge marca */}
-        <div className="absolute left-3.5 top-3.5 flex items-center gap-2 rounded-lg border border-[#E5E7EB] bg-white/95 px-3 py-1.5 shadow-sm backdrop-blur-sm">
-          <img src={logoAsset.url} alt="" className="h-4 w-4" />
-          <span className="text-[11px] font-semibold text-[#111827]">Nexus Automation Pack</span>
-        </div>
 
         {/* Pill +50 */}
         <div
@@ -971,6 +965,25 @@ function Footer() {
   );
 }
 
+/* ── WHATSAPP BUTTON ── */
+function WhatsAppButton() {
+  const phone = "11975322528";
+  const message = "Quero saber mais sobre o pack de automações.";
+  const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+  return (
+    <a
+      href={whatsappUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="fixed bottom-6 right-6 z-40 flex items-center justify-center h-14 w-14 rounded-full bg-[#25D366] text-white shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl"
+      title="Enviar mensagem no WhatsApp"
+    >
+      <MessageCircle className="h-6 w-6" />
+    </a>
+  );
+}
+
 /* ── PAGE ── */
 function Landing() {
   useScrollReveal();
@@ -987,6 +1000,7 @@ function Landing() {
       <FAQ />
       <FinalCTA />
       <Footer />
+      <WhatsAppButton />
     </main>
   );
 }
