@@ -1,0 +1,66 @@
+name: Codex Authority Patch
+
+on:
+  push:
+    paths:
+      - .github/workflows/codex-authority-patch.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-authority:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Patch authority section
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/routes/index.tsx')
+          text = path.read_text(encoding='utf-8')
+          replacements = [
+              (
+                  'desc: "Cada automação apresenta o problema, a lógica do processo e possíveis aplicações.",',
+                  'desc: "Cada automação apresenta o problema, a lógica e uma aplicação prática.",',
+              ),
+              (
+                  'desc: "O foco não está apenas na ferramenta, mas em como identificar oportunidades e entender onde cada solução pode gerar valor.",',
+                  'desc: "O foco não está apenas na ferramenta, mas em entender onde cada solução pode gerar valor.",',
+              ),
+              (
+                  'desc: "Fluxogramas, explicações visuais e estrutura organizada para facilitar a compreensão.",',
+                  'desc: "Fluxogramas visuais, explicações organizadas e entendimento mais rápido dos processos.",',
+              ),
+              (
+                  'O Nexus Automation Pack foi criado para ajudar profissionais que já estudam automação, IA e ferramentas modernas a entender quais soluções possuem potencial comercial e como enxergar oportunidades reais de aplicação.',
+                  'O Nexus Automation Pack foi criado para ajudar profissionais que estudam automação a entender onde existem aplicações reais e oportunidades de mercado.',
+              ),
+              (
+                  'O objetivo do Nexus Automation Pack é ajudar a encurtar essa jornada através de exemplos visuais, lógica de funcionamento e contexto comercial.',
+                  'O objetivo do Nexus Automation Pack é encurtar essa jornada através de exemplos visuais, lógica de funcionamento e contexto de mercado.',
+              ),
+          ]
+
+          missing = [old for old, _ in replacements if old not in text]
+          if missing:
+              raise SystemExit('Expected authority text was not found; aborting without changes.')
+
+          for old, new in replacements:
+              text = text.replace(old, new, 1)
+
+          path.write_text(text, encoding='utf-8')
+          Path('.github/workflows/codex-authority-patch.yml').unlink()
+          PY
+      - name: Commit changes
+        shell: bash
+        run: |
+          git config user.name "codex"
+          git config user.email "codex@openai.com"
+          git add src/routes/index.tsx .github/workflows/codex-authority-patch.yml
+          git commit -m "Add Nexus authority section copy"
+          git push origin main
